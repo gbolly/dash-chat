@@ -1,0 +1,7 @@
+include dash_chat/dash_chat.min.js
+include dash_chat/dash_chat.min.js.map
+include dash_chat/metadata.json
+include dash_chat/package-info.json
+include README.md
+include LICENSE
+include package.json
