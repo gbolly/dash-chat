@@ -7,7 +7,7 @@ with open("package.json") as f:
     package = json.load(f)
 long_description = (here / "README.md").read_text()
 
-package_name = package["name"].replace(" ", "_").replace("-", "_")
+package_name = package["name"].replace(" ", "_")
 
 setup(
     name=package_name,
