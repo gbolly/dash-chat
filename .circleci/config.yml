@@ -29,7 +29,9 @@ jobs:
             pip install -r tests/requirements.txt
       - run:
           name: Show installed Python packages
-          command: pip list -v
+          command: |
+            . venv/bin/activate
+            pip list -v
       - run:
           name: Run flake8
           command: |
@@ -42,7 +44,9 @@ jobs:
             black --check tests usage.py dash_chat
       - run:
           name: Run tests
-          command: pytest tests/
+          command: |
+            . venv/bin/activate
+            pytest tests/
 
 workflows:
   version: 2
