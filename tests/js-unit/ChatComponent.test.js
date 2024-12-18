@@ -16,11 +16,11 @@ describe("ChatComponent", () => {
             { sender: "user", text: "I need help with my account." },
         ],
         theme: "lightTheme",
-        typingIndicator: "dots",
-        isTyping: { user: false, assistant: false },
-        setProps: mockSetProps,
-        fillHeight: true,
-        fillWidth: true,
+        typing_indicator: "dots",
+        is_typing: { user: false, assistant: false },
+        set_props: mockSetProps,
+        fill_height: true,
+        fill_width: true,
     };
 
     it("renders chat messages correctly", () => {
@@ -36,7 +36,7 @@ describe("ChatComponent", () => {
     });
 
     it("displays typing indicators when isTyping is true", () => {
-        render(<ChatComponent {...defaultProps} isTyping={{ user: true, assistant: true }} />);
+        render(<ChatComponent {...defaultProps} is_typing={{ user: true, assistant: true }} />);
         expect(screen.getByTestId("typing-indicator")).toBeInTheDocument();
     });
 
@@ -56,14 +56,14 @@ describe("ChatComponent", () => {
     });
 
     it("should scroll to the bottom when a new message is added", () => {
-        const { getByTestId } = render(<ChatComponent localMessages={[]} isTyping={false} />);
+        const { getByTestId } = render(<ChatComponent localMessages={[]} is_typing={false} />);
         
         fireEvent.click(getByTestId("send-button"));
         expect(window.HTMLElement.prototype.scrollIntoView).toHaveBeenCalled();
     });
 
     it("applies correct height and width when fillHeight and fillWidth are true", () => {
-        const { container } = render(<ChatComponent {...defaultProps} fillHeight={true} fillWidth={true} />);
+        const { container } = render(<ChatComponent {...defaultProps} fill_height={true} fill_width={true} />);
 
         const chatContainer = container.querySelector(".chat-container");
         expect(chatContainer).toHaveStyle("height: 95vh");
@@ -71,7 +71,7 @@ describe("ChatComponent", () => {
     });
 
     it("applies correct height and width when fillHeight is true and fillWidth is false", () => {
-        const { container } = render(<ChatComponent {...defaultProps} fillHeight={true} fillWidth={false} />);
+        const { container } = render(<ChatComponent {...defaultProps} fill_height={true} fill_width={false} />);
 
         const chatContainer = container.querySelector(".chat-container");
         expect(chatContainer).toHaveStyle("height: 95vh");
@@ -80,7 +80,7 @@ describe("ChatComponent", () => {
     });
 
     it("applies correct height and width when fillHeight is false and fillWidth is true", () => {
-        const { container } = render(<ChatComponent {...defaultProps} fillHeight={false} fillWidth={true} />);
+        const { container } = render(<ChatComponent {...defaultProps} fill_height={false} fill_width={true} />);
 
         const chatContainer = container.querySelector(".chat-container");
         expect(chatContainer).toHaveStyle("height: 50vh");
@@ -88,7 +88,7 @@ describe("ChatComponent", () => {
     });
 
     it("applies correct height and width when fillHeight and fillWidth are false", () => {
-        const { container } = render(<ChatComponent {...defaultProps} fillHeight={false} fillWidth={false} />);
+        const { container } = render(<ChatComponent {...defaultProps} fill_height={false} fill_width={false} />);
 
         const chatContainer = container.querySelector(".chat-container");
         expect(chatContainer).toHaveStyle("height: 50vh");
