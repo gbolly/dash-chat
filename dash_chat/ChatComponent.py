@@ -19,36 +19,36 @@ class ChatComponent(Component):
         callbacks. The ID needs to be unique across all of the components
         in an app.
 
-    - customStyles (dict; optional):
+    - custom_styles (dict; optional):
         Inline styles to customize the chat container.
 
-    - fillHeight (boolean; default True):
+    - fill_height (boolean; default True):
         Whether to vertically fill the screen with the chat container. If
         False, centers and constrains container to a maximum height.
 
-    - fillWidth (boolean; default True):
+    - fill_width (boolean; default True):
         Whether to horizontally fill the screen with the chat container.
         If False, centers and constrains container to a maximum width.
 
-    - inputComponent (optional):
+    - input_component (optional):
         A custom React input component. If provided, it will override the
         default input field.
 
-    - isTyping (dict; default { user: False, assistant: False }):
+    - is_typing (dict; default { user: False, assistant: False }):
         Indicates whether the user or assistant is typing. Should be an
         object with:    - `user` (boolean): True if the user is typing.
         - `assistant` (boolean): True if the assistant is typing.
 
-        `isTyping` is a dict with keys:
+        `is_typing` is a dict with keys:
 
         - user (boolean; optional)
 
         - assistant (boolean; optional)
 
-    - messageInputContainerStyle (dict; optional):
+    - message_input_container_style (dict; optional):
         Inline styles for the container holding the message input field.
 
-    - messageInputStyle (dict; optional):
+    - message_input_style (dict; optional):
         Inline styles for the message input field itself.
 
     - messages (list of dicts; optional):
@@ -63,14 +63,14 @@ class ChatComponent(Component):
 
         - text (string; required)
 
-    - newMessage (dict; optional):
+    - new_message (dict; optional):
         Latest chat message that was appended to messages array.
 
     - theme (string; default "lightTheme"):
         Theme for the chat interface. Default is \"lightTheme\". Use
         \"darkTheme\" for a dark mode appearance.
 
-    - typingIndicator (a value equal to: "dots", "spinner"; default "dots"):
+    - typing_indicator (a value equal to: "dots", "spinner"; default "dots"):
         The type of typing indicator to display. Options are:    -
         `\"dots\"`: Displays animated dots.    - `\"spinner\"`: Displays a
         spinner animation."""
@@ -85,46 +85,47 @@ class ChatComponent(Component):
         self,
         id=Component.UNDEFINED,
         messages=Component.UNDEFINED,
+        set_props=Component.UNDEFINED,
         theme=Component.UNDEFINED,
-        customStyles=Component.UNDEFINED,
-        typingIndicator=Component.UNDEFINED,
-        inputComponent=Component.UNDEFINED,
-        newMessage=Component.UNDEFINED,
-        messageInputContainerStyle=Component.UNDEFINED,
-        messageInputStyle=Component.UNDEFINED,
-        isTyping=Component.UNDEFINED,
-        fillHeight=Component.UNDEFINED,
-        fillWidth=Component.UNDEFINED,
+        custom_styles=Component.UNDEFINED,
+        typing_indicator=Component.UNDEFINED,
+        input_component=Component.UNDEFINED,
+        new_message=Component.UNDEFINED,
+        message_input_container_style=Component.UNDEFINED,
+        message_input_style=Component.UNDEFINED,
+        is_typing=Component.UNDEFINED,
+        fill_height=Component.UNDEFINED,
+        fill_width=Component.UNDEFINED,
         **kwargs
     ):
         self._prop_names = [
             "id",
-            "customStyles",
-            "fillHeight",
-            "fillWidth",
-            "inputComponent",
-            "isTyping",
-            "messageInputContainerStyle",
-            "messageInputStyle",
+            "custom_styles",
+            "fill_height",
+            "fill_width",
+            "input_component",
+            "is_typing",
+            "message_input_container_style",
+            "message_input_style",
             "messages",
-            "newMessage",
+            "new_message",
             "theme",
-            "typingIndicator",
+            "typing_indicator",
         ]
         self._valid_wildcard_attributes = []
         self.available_properties = [
             "id",
-            "customStyles",
-            "fillHeight",
-            "fillWidth",
-            "inputComponent",
-            "isTyping",
-            "messageInputContainerStyle",
-            "messageInputStyle",
+            "custom_styles",
+            "fill_height",
+            "fill_width",
+            "input_component",
+            "is_typing",
+            "message_input_container_style",
+            "message_input_style",
             "messages",
-            "newMessage",
+            "new_message",
             "theme",
-            "typingIndicator",
+            "typing_indicator",
         ]
         self.available_wildcard_properties = []
         _explicit_args = kwargs.pop("_explicit_args")

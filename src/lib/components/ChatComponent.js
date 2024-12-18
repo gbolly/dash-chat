@@ -6,10 +6,10 @@
  *     messages={[
  *         { sender: "assistant", text: "Hello! How can I assist you today?" }
  *     ]}
- *     typingIndicator="dots"
+ *     typing_indicator="dots"
  *     theme="darkTheme"
- *     customStyles={{ backgroundColor: "#222", color: "#fff" }}
- *     isTyping={{ user: false, assistant: true }}
+ *     custom_styles={{ backgroundColor: "#222", color: "#fff" }}
+ *     is_typing={{ user: false, assistant: true }}
  * />
  * ```
 */
@@ -34,17 +34,18 @@ import "../styles/chatStyles2.css";
 */
 
 const ChatComponent = ({
+    // allowing snake_case to support Python's naming convention
     messages: propMessages,
     theme,
-    customStyles,
-    typingIndicator,
-    inputComponent: CustomInputComponent,
-    messageInputContainerStyle,
-    messageInputStyle,
-    setProps,
-    isTyping,
-    fillHeight,
-    fillWidth,
+    custom_styles: customStyles,
+    typing_indicator: typingIndicator,
+    input_component: CustomInputComponent,
+    message_input_container_style: messageInputContainerStyle,
+    message_input_style: messageInputStyle,
+    set_props: setProps,
+    is_typing: isTyping,
+    fill_height: fillHeight,
+    fill_width: fillWidth,
 }) => {
     const [currentMessage, setCurrentMessage] = useState("");
     const [localMessages, setLocalMessages] = useState(propMessages || []);
@@ -158,7 +159,7 @@ ChatComponent.propTypes = {
     /**
      * Dash-assigned callback that gets fired when the value for messages and isTyping changes.
     */
-    setProps: PropTypes.func,
+    set_props: PropTypes.func,
     /**
      * Theme for the chat interface. Default is "lightTheme". Use "darkTheme" for a dark mode appearance.
     */
@@ -166,60 +167,60 @@ ChatComponent.propTypes = {
     /**
      * Inline styles to customize the chat container.
     */
-    customStyles: PropTypes.object,
+    custom_styles: PropTypes.object,
     /**
      * The type of typing indicator to display. Options are:
      *    - `"dots"`: Displays animated dots.
      *    - `"spinner"`: Displays a spinner animation.
     */
-    typingIndicator: PropTypes.oneOf(["dots", "spinner"]),
+    typing_indicator: PropTypes.oneOf(["dots", "spinner"]),
     /**
      * A custom React input component. If provided, it will override the default input field.
     */
-    inputComponent: PropTypes.elementType,
+    input_component: PropTypes.elementType,
     /**
      * Latest chat message that was appended to messages array.
     */
-    newMessage: PropTypes.object,
+    new_message: PropTypes.object,
     /**
      * Inline styles for the container holding the message input field.
     */
-    messageInputContainerStyle: PropTypes.object,
+    message_input_container_style: PropTypes.object,
     /**
      * Inline styles for the message input field itself.
     */
-    messageInputStyle: PropTypes.object,
+    message_input_style: PropTypes.object,
     /**
      * Indicates whether the user or assistant is typing. Should be an object with:
      *    - `user` (boolean): True if the user is typing.
      *    - `assistant` (boolean): True if the assistant is typing.
     */
-    isTyping: PropTypes.shape({
+    is_typing: PropTypes.shape({
         user: PropTypes.bool,
         assistant: PropTypes.bool,
     }),
     /**
      *  Whether to vertically fill the screen with the chat container. If False, centers and constrains container to a maximum height.
     */
-    fillHeight: PropTypes.bool,
+    fill_height: PropTypes.bool,
     /**
      * Whether to horizontally fill the screen with the chat container. If False, centers and constrains container to a maximum width.
     */
-    fillWidth: PropTypes.bool,
+    fill_width: PropTypes.bool,
 };
 
 ChatComponent.defaultProps = {
-    setProps: () => {},
+    set_props: () => {},
     theme: "lightTheme",
-    customStyles: null,
-    typingIndicator: "dots",
-    inputComponent: null,
-    newMessage: null,
-    messageInputContainerStyle: null,
-    messageInputStyle: null,
-    isTyping: { user: false, assistant: false },
-    fillHeight: true,
-    fillWidth: true
+    custom_styles: null,
+    typing_indicator: "dots",
+    input_component: null,
+    new_message: null,
+    message_input_container_style: null,
+    message_input_style: null,
+    is_typing: { user: false, assistant: false },
+    fill_height: true,
+    fill_width: true
 };
 
 export default ChatComponent;

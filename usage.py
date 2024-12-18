@@ -36,11 +36,11 @@ app.layout = html.Div(
             messages=[
                 {"sender": "assistant", "text": "Hello! How can I assist you today?"},
             ],
-            typingIndicator="dots",
+            typing_indicator="dots",
             theme="lightTheme",
-            isTyping={"user": False, "assistant": False},
-            fillHeight=False,
-            fillWidth=False,
+            is_typing={"user": False, "assistant": False},
+            fill_height=False,
+            fill_width=False,
         ),
         html.Div(id="output"),
     ]

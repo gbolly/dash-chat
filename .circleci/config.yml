@@ -1,8 +1,5 @@
 version: 2.1
 
-orbs:
-  win: circleci/windows@5.0.0
-
 jobs:
   node:
     docker:
@@ -21,7 +18,7 @@ jobs:
 
   python:
     docker:
-      - image: circleci/python:3.9
+      - image: circleci/python:3.13
     steps:
       - checkout
       - run:
@@ -39,7 +36,7 @@ jobs:
           name: Run black
           command: |
             . venv/bin/activate
-            black --check tests usage.py
+            black --check tests usage.py dash_chat
       - run:
           name: Run tests
           command: pytest tests/
