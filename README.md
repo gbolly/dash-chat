@@ -1,98 +1,145 @@
-# dash chat
+# dash-chat
 
 dash chat is a Dash component library.
 
-A chat component for Dash
+dash-chat is a Dash component library chat interface. It provides a customizable and responsive chat UI with support for typing indicators, themes, and state management.
 
-Get started with:
-1. Install Dash and its dependencies: https://dash.plotly.com/installation
-2. Run `python usage.py`
-3. Visit http://localhost:8050 in your web browser
+## License
 
-## Contributing
+This project is licensed under the MIT License. See the LICENSE file for details.
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md)
+## Features
 
-### Install dependencies
+- Uses the **dash_chat.ChatComponent**; an high-level abstraction to display messages exchanged between two users, typically a **user** and an **assistant**.
+- Customizable themes and inline styles for the chat UI.
+- Typing indicators for both the user and the assistant.
+- Easy integration with Dash using the `setProps` callback for state management.
+- Support for custom input components.
 
-If you have selected install_dependencies during the prompt, you can skip this part.
+## Installation
+```
+$ pip install dash-chat
+```
 
-1. Install npm packages
-    ```
-    $ npm install
-    ```
-2. Create a virtual env and activate.
-    ```
-    $ virtualenv venv
-    $ . venv/bin/activate
-    ```
-    _Note: venv\Scripts\activate for windows_
+## Basic Usage
+The first thing to do is to define a [dash app layout](https://dash.plotly.com/layout) and adding the **dash_chat.ChatComponent** to the layout. The simplest way to use the **dash_chat.ChatComponent** is to provide the **messages** prop. This is a list containing a dictionary of chat messages. Each message must have a;
+- **sender**(str): The message sender, either \"user\" or \"assistant\".
+- **text**(text): The content of the message.
 
-3. Install python packages required to build components.
-    ```
-    $ pip install -r requirements.txt
-    ```
-4. Install the python packages for testing (optional)
-    ```
-    $ pip install -r tests/requirements.txt
-    ```
+A dash callback chat function is also required to handle how the messages list is updated in state.
 
-### Write your component code in `src/lib/components/ChatComponent.react.js`.
+### Example 1
 
-- The demo app is in `src/demo` and you will import your example component code into your demo app.
-- Test your code in a Python environment:
-    1. Build your code
-        ```
-        $ npm run build
-        ```
-    2. Run and modify the `usage.py` sample dash app:
-        ```
-        $ python usage.py
-        ```
-- Write tests for your component.
-    - A sample test is available in `tests/test_usage.py`, it will load `usage.py` and you can then automate interactions with selenium.
-    - Run the tests with `$ pytest tests`.
-    - The Dash team uses these types of integration tests extensively. Browse the Dash component code on GitHub for more examples of testing (e.g. https://github.com/plotly/dash-core-components)
-- Add custom styles to your component by putting your custom CSS files into your distribution folder (`dash_chat`).
-    - Make sure that they are referenced in `MANIFEST.in` so that they get properly included when you're ready to publish your component.
-    - Make sure the stylesheets are added to the `_css_dist` dict in `dash_chat/__init__.py` so dash will serve them automatically when the component suite is requested.
-- [Review your code](./review_checklist.md)
+```python
+import dash_chat as dcc
+from dash import html
+from my_component_library import ChatComponent
 
-### Create a production build and publish:
+app = dash.Dash(__name__)
 
-1. Build your code:
-    ```
-    $ npm run build
-    ```
-2. Create a Python distribution
-    ```
-    $ python setup.py sdist bdist_wheel
-    ```
-    This will create source and wheel distribution in the generated the `dist/` folder.
-    See [PyPA](https://packaging.python.org/guides/distributing-packages-using-setuptools/#packaging-your-project)
-    for more information.
+app.layout = html.Div([
+    dcc.ChatComponent(
+        id="chat-component",
+        messages=[
+            {"sender": "user", "text": "Hello!"},
+        ],
+    )
+])
 
-3. Test your tarball by copying it into a new environment and installing it locally:
-    ```
-    $ pip install dash_chat-0.0.1.tar.gz
-    ```
+@app.callback(
+    Output("chat-component", "messages")
+    Input("chat-component", "newMessage"),
+    State("chat-component", "messages"),
+    prevent_initial_call=True,
+)
+def handle_chat(new_message, messages):
+    if not new_message:
+        return messages
 
-4. If it works, then you can publish the component to NPM and PyPI:
-    1. Publish on PyPI
-        ```
-        $ twine upload dist/*
-        ```
-    2. Cleanup the dist folder (optional)
-        ```
-        $ rm -rf dist
-        ```
-    3. Publish on NPM (Optional if chosen False in `publish_on_npm`)
-        ```
-        $ npm publish
-        ```
-        _Publishing your component to NPM will make the JavaScript bundles available on the unpkg CDN. By default, Dash serves the component library's CSS and JS locally, but if you choose to publish the package to NPM you can set `serve_locally` to `False` and you may see faster load times._
+    updated_messages = messages + [new_message]
 
-5. Share your component with the community! https://community.plotly.com/c/dash
-    1. Publish this repository to GitHub
-    2. Tag your GitHub repository with the plotly-dash tag so that it appears here: https://github.com/topics/plotly-dash
-    3. Create a post in the Dash community forum: https://community.plotly.com/c/dash
+    if new_message["sender"] == "user":
+        time.sleep(2)
+        bot_response = {"sender": "assistant", "text": "Hello John Doe."}
+        return updated_messages + [bot_response]
+
+    return updated_messages
+
+if __name__ == "__main__":
+    app.run_server(debug=True)
+```
+
+### Example 2
+Using **openai** with dash-chat
+
+```python
+import dash_chat as dcc
+from dash import html
+from my_component_library import ChatComponent
+
+
+api_key = os.environ.get("OPEN_API_KEY")
+client = OpenAI(api_key=api_key)
+
+app = dash.Dash(__name__)
+
+app.layout = html.Div([
+    dcc.ChatComponent(
+        id="chat-component",
+        messages=[
+            {"sender": "user", "text": "Hello!"},
+        ],
+    )
+])
+
+@app.callback(
+    Output("chat-component", "messages")
+    Input("chat-component", "newMessage"),
+    State("chat-component", "messages"),
+    prevent_initial_call=True,
+)
+def handle_chat(new_message, messages):
+    if not new_message:
+        return messages
+
+    updated_messages = messages + [new_message]
+
+    if new_message["sender"] == "user":
+        openai_messages = [
+            {"role": msg["sender"], "content": msg["text"]}
+            for msg in message
+        ]
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=openai_messages,
+            temperature=1.0,
+            max_tokens=150,
+        )
+
+        bot_response = {"sender": "assistant", "text": response.choices[0].message.content.strip()}
+        return updated_messages + [bot_response]
+
+    return updated_messages
+
+if __name__ == "__main__":
+    app.run_server(debug=True)
+```
+
+The `ChatComponent` can be configured with the following properties:
+
+### **Props**
+
+| Prop Name                     | Type                       | Default Value                 | Description                                                                                   |
+|-------------------------------|----------------------------|-------------------------------|-----------------------------------------------------------------------------------------------|
+| **id**                        | `string`                  | `None`                        | Unique identifier for the component, required for Dash callbacks.                             |
+| **customStyles**              | `dict`                    | `None`                        | Inline styles to customize the chat container.                                               |
+| **fillHeight**                | `boolean`                 | `True`                        | Whether to vertically fill the screen with the chat container. If `False`, constrains height. |
+| **fillWidth**                 | `boolean`                 | `True`                        | Whether to horizontally fill the screen with the chat container. If `False`, constrains width.|
+| **inputComponent**            | `React Component`         | `None`                        | A custom React input component that overrides the default input field.                       |
+| **isTyping**                  | `dict`                    | `{ user: False, assistant: False }` | Indicates whether the user or assistant is typing. Keys include: `user` and `assistant`.      |
+| **messageInputContainerStyle**| `dict`                    | `None`                        | Inline styles for the container holding the message input field.                             |
+| **messageInputStyle**         | `dict`                    | `None`                        | Inline styles for the message input field itself.                                            |
+| **messages**                  | `list of dicts`           | `None`                        | List of chat messages. Each message object must include: `sender` and `text`.                |
+| **newMessage**                | `dict`                    | `None`                        | Latest chat message appended to the `messages` array.                                        |
+| **theme**                     | `string`                  | `"lightTheme"`                | Theme for the chat interface. Options: `"lightTheme"` or `"darkTheme"`.                      |
+| **typingIndicator**           | `string`                  | `"dots"`                      | Type of typing indicator. Options: `"dots"` (animated dots) or `"spinner"` (spinner).        |

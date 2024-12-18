@@ -42,7 +42,9 @@ const ChatComponent = ({
     messageInputContainerStyle,
     messageInputStyle,
     setProps,
-    isTyping
+    isTyping,
+    fillHeight,
+    fillWidth,
 }) => {
     const [currentMessage, setCurrentMessage] = useState("");
     const [localMessages, setLocalMessages] = useState(propMessages || []);
@@ -53,7 +55,9 @@ const ChatComponent = ({
     }, [propMessages]);
 
     useEffect(() => {
-        messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        if (messageEndRef.current) {
+            messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+        }
     }, [localMessages, isTyping]);
 
     const handleInputChange = (e) => {
@@ -76,40 +80,58 @@ const ChatComponent = ({
         }
     };
 
+    const styleChatContainerSize = {};
+    if (fillHeight) {
+        styleChatContainerSize.height = "95vh";
+    } else {
+        styleChatContainerSize.height = "50vh";
+    }
+    if (fillWidth) {
+        styleChatContainerSize.width = "100%";
+    } else {
+        styleChatContainerSize.width = "50%";
+        styleChatContainerSize.margin = "0 auto";
+    }
+
     return (
-        <div className={`chat-container ${theme === "darkTheme" ? "default2" : "default1"}`} style={customStyles}>
-            <div className="chat-messages">
-                {localMessages.map((message, index) => (
-                    <div key={index} className={`chat-bubble ${message.sender}`}>
-                        {message.text}
-                    </div>
-                ))}
-                {isTyping?.user && (
-                    <div className="typing-indicator user-typing">
-                        {typingIndicator === "dots" && <TypingIndicatorDots />}
-                        {typingIndicator === "spinner" && <TypingIndicatorSpinner />}
-                    </div>
-                )}
-                {isTyping?.assistant && (
-                    <div className="typing-indicator assistant-typing">
-                        {typingIndicator === "dots" && <TypingIndicatorDots />}
-                        {typingIndicator === "spinner" && <TypingIndicatorSpinner />}
-                    </div>
-                )}
-                <div ref={messageEndRef} />
-            </div>
-            <div className="chat-input">
-                {CustomInputComponent ? (
-                    <CustomInputComponent onSend={handleSendMessage} />
-                ) : (
-                    <MessageInput
-                        onSend={handleSendMessage}
-                        handleInputChange={handleInputChange}
-                        value={currentMessage}
-                        customStyles={messageInputContainerStyle}
-                        inputComponentStyles={messageInputStyle}
-                    />
-                )}
+        <div className="container">
+            <div
+                className={`chat-container ${theme === "darkTheme" ? "default2" : "default1"}`}
+                style={{ ...customStyles, ...styleChatContainerSize }}
+            >
+                <div className="chat-messages">
+                    {localMessages.map((message, index) => (
+                        <div key={index} className={`chat-bubble ${message.sender}`}>
+                            {message.text}
+                        </div>
+                    ))}
+                    {isTyping?.user && (
+                        <div className="typing-indicator user-typing" data-testid="typing-indicator">
+                            {typingIndicator === "dots" && <TypingIndicatorDots />}
+                            {typingIndicator === "spinner" && <TypingIndicatorSpinner />}
+                        </div>
+                    )}
+                    {isTyping?.assistant && (
+                        <div className="typing-indicator assistant-typing">
+                            {typingIndicator === "dots" && <TypingIndicatorDots />}
+                            {typingIndicator === "spinner" && <TypingIndicatorSpinner />}
+                        </div>
+                    )}
+                    <div ref={messageEndRef} />
+                </div>
+                <div className="chat-input">
+                    {CustomInputComponent ? (
+                        <CustomInputComponent onSend={handleSendMessage} />
+                    ) : (
+                        <MessageInput
+                            onSend={handleSendMessage}
+                            handleInputChange={handleInputChange}
+                            value={currentMessage}
+                            customStyles={messageInputContainerStyle}
+                            inputComponentStyles={messageInputStyle}
+                        />
+                    )}
+                </div>
             </div>
         </div>
     );
@@ -152,7 +174,7 @@ ChatComponent.propTypes = {
     */
     typingIndicator: PropTypes.oneOf(["dots", "spinner"]),
     /**
-     * A custom message React input component. If provided, it will override the default input field.
+     * A custom React input component. If provided, it will override the default input field.
     */
     inputComponent: PropTypes.elementType,
     /**
@@ -176,6 +198,14 @@ ChatComponent.propTypes = {
         user: PropTypes.bool,
         assistant: PropTypes.bool,
     }),
+    /**
+     *  Whether to vertically fill the screen with the chat container. If False, centers and constrains container to a maximum height.
+    */
+    fillHeight: PropTypes.bool,
+    /**
+     * Whether to horizontally fill the screen with the chat container. If False, centers and constrains container to a maximum width.
+    */
+    fillWidth: PropTypes.bool,
 };
 
 ChatComponent.defaultProps = {
@@ -188,6 +218,8 @@ ChatComponent.defaultProps = {
     messageInputContainerStyle: null,
     messageInputStyle: null,
     isTyping: { user: false, assistant: false },
+    fillHeight: true,
+    fillWidth: true
 };
 
 export default ChatComponent;

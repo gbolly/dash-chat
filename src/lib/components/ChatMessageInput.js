@@ -44,7 +44,11 @@ const MessageInput = ({
                 style={inputComponentStyles}
                 className="message-input-field"
             />
-            <button onClick={onSend} className="message-input-button">
+            <button
+                onClick={onSend}
+                className="message-input-button"
+                data-testid="send-button"
+            >
                 {buttonLabel}
             </button>
         </div>
