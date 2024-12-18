@@ -18,7 +18,7 @@ jobs:
 
   python:
     docker:
-      - image: circleci/python:3.13
+      - image: cimg/python:3.13
     steps:
       - checkout
       - run:
