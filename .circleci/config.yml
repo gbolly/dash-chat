@@ -6,7 +6,7 @@ orbs:
 jobs:
   node:
     docker:
-      - image: circleci/node:21
+      - image: cimg/node:21.6.1
     steps:
       - checkout
       - run:
@@ -30,6 +30,7 @@ jobs:
             python -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt
+            pip install -r tests/requirements.txt
       - run:
           name: Run flake8
           command: |
@@ -40,6 +41,9 @@ jobs:
           command: |
             . venv/bin/activate
             black --check .
+      - run:
+          name: Run tests
+          command: pytest tests/
 
 workflows:
   version: 2
