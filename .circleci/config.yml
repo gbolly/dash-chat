@@ -6,9 +6,17 @@ jobs:
       - image: cimg/node:21.6.1
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - node-deps-{{ checksum "package-lock.json" }}
+            - node-deps-
       - run:
           name: Install dependencies
           command: npm install
+      - save_cache:
+          paths:
+            - ~/.npm
+          key: node-deps-{{ checksum "package-lock.json" }}
       - run:
           name: Run eslint
           command: npm run lint
@@ -21,12 +29,22 @@ jobs:
       - image: cimg/python:3.13
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - python-deps-{{ checksum "tests/requirements.txt" }}
+            - python-deps-
       - run:
           name: Install dependencies
           command: |
+            apt-get update && apt-get install -y --no-install-recommends chromium-browser
             python -m venv venv
             . venv/bin/activate
+            pip install --upgrade pip
             pip install -r tests/requirements.txt
+      - save_cache:
+          paths:
+            - ~/.cache/pip
+          key: python-deps-{{ checksum "tests/requirements.txt" }}
       - run:
           name: Show installed Python packages
           command: |
