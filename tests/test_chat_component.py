@@ -9,7 +9,9 @@ def test_render_chat_component(dash_duo):
     dash_duo.start_server(app)
 
     # test 1: verify that initial chat messages are rendered
-    first_message = dash_duo.wait_for_element_by_css_selector(".chat-messages:nth-child(1)")
+    first_message = dash_duo.wait_for_element_by_css_selector(
+        ".chat-messages:nth-child(1)"
+    )
     assert "Hello! How can I assist you today?" in first_message.text
 
     # test 2: verify input field and typing functionality
@@ -26,13 +28,13 @@ def test_render_chat_component(dash_duo):
     assert typing_indicator.is_displayed()
 
     # test 4: verify that user chat messages are rendered
-    second_message = dash_duo.wait_for_element_by_css_selector(".chat-bubble:nth-child(2)")
+    second_message = dash_duo.wait_for_element_by_css_selector(
+        ".chat-bubble:nth-child(2)"
+    )
     assert "Hi dash-chat, this is the user" in second_message.text
 
     # Wait for the new message to appear in the chat
-    dash_duo.wait_for_text_to_equal(
-        ".chat-bubble:nth-child(3", "Hello John Doe."
-    )
+    dash_duo.wait_for_text_to_equal(".chat-bubble:nth-child(3", "Hello John Doe.")
 
     # test 5: ensure the correct theme is applied
     chat_container = dash_duo.wait_for_element_by_css_selector(".chat-container")
