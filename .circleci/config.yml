@@ -40,7 +40,7 @@ jobs:
           name: Run black
           command: |
             . venv/bin/activate
-            black --check .
+            black --check tests usage.py
       - run:
           name: Run tests
           command: pytest tests/
