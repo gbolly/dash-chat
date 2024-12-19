@@ -18,7 +18,7 @@ describe("ChatComponent", () => {
         theme: "lightTheme",
         typing_indicator: "dots",
         is_typing: { user: false, assistant: false },
-        set_props: mockSetProps,
+        setProps: mockSetProps,
         fill_height: true,
         fill_width: true,
     };
@@ -51,7 +51,7 @@ describe("ChatComponent", () => {
         fireEvent.click(sendButton);
         expect(mockSetProps).toHaveBeenCalledWith({
             newMessage: { sender: "user", text: "This is a test message" },
-            isTyping: { user: false, assistant: true },
+            is_typing: { user: false, assistant: true },
         });
     });
 
