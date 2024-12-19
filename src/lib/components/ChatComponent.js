@@ -34,7 +34,12 @@ import "../styles/chatStyles2.css";
 */
 
 const ChatComponent = ({
-    // allowing snake_case to support Python's naming convention
+    /**
+     * allowing snake_case to support Python's naming convention
+     * except for setProps which is automatically set by dash and
+     * it's expected to be named in the camelCase format.
+     * https://dash.plotly.com/react-for-python-developers
+    */
     messages: propMessages,
     theme,
     custom_styles: customStyles,
@@ -42,7 +47,7 @@ const ChatComponent = ({
     input_component: CustomInputComponent,
     message_input_container_style: messageInputContainerStyle,
     message_input_style: messageInputStyle,
-    set_props: setProps,
+    setProps,
     is_typing: isTyping,
     fill_height: fillHeight,
     fill_width: fillWidth,
@@ -64,7 +69,7 @@ const ChatComponent = ({
     const handleInputChange = (e) => {
         setCurrentMessage(e.target.value);
         if (setProps) {
-            setProps({ isTyping: { user: e.target.value.length > 0, assistant: isTyping?.assistant } });
+            setProps({ is_typing: { user: e.target.value.length > 0, assistant: isTyping?.assistant } });
         }
     };
 
@@ -74,7 +79,7 @@ const ChatComponent = ({
             setLocalMessages((prevMessages) => [...prevMessages, newMessage]);
 
             if (setProps) {
-                setProps({ newMessage, isTyping: { user: false, assistant: !isTyping?.assistant } });
+                setProps({ new_message: newMessage, is_typing: { user: false, assistant: !isTyping?.assistant } });
             }
 
             setCurrentMessage("");
@@ -159,7 +164,7 @@ ChatComponent.propTypes = {
     /**
      * Dash-assigned callback that gets fired when the value for messages and isTyping changes.
     */
-    set_props: PropTypes.func,
+    setProps: PropTypes.func,
     /**
      * Theme for the chat interface. Default is "lightTheme". Use "darkTheme" for a dark mode appearance.
     */
@@ -210,7 +215,7 @@ ChatComponent.propTypes = {
 };
 
 ChatComponent.defaultProps = {
-    set_props: () => {},
+    setProps: () => {},
     theme: "lightTheme",
     custom_styles: null,
     typing_indicator: "dots",

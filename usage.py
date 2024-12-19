@@ -48,8 +48,8 @@ app.layout = html.Div(
 
 
 @app.callback(
-    [Output("chat-component", "messages"), Output("chat-component", "isTyping")],
-    Input("chat-component", "newMessage"),
+    [Output("chat-component", "messages"), Output("chat-component", "is_typing")],
+    Input("chat-component", "new_message"),
     State("chat-component", "messages"),
     prevent_initial_call=True,
 )
