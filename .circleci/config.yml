@@ -40,11 +40,6 @@ jobs:
             . venv/bin/activate
             pip install --upgrade pip
             pip install -r tests/requirements.txt
-      - run:
-          name: Verify Chromium and Chromedriver
-          command: |
-            . venv/bin/activate
-            chromedriver --version
       - save_cache:
           paths:
             - ~/.cache/pip

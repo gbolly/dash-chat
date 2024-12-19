@@ -50,7 +50,7 @@ describe("ChatComponent", () => {
 
         fireEvent.click(sendButton);
         expect(mockSetProps).toHaveBeenCalledWith({
-            newMessage: { sender: "user", text: "This is a test message" },
+            new_message: { sender: "user", text: "This is a test message" },
             is_typing: { user: false, assistant: true },
         });
     });
