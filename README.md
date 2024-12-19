@@ -24,9 +24,9 @@ $ pip install dash-chat
 ```
 
 ## Basic Usage
-The simplest way to use the `dash_chat.ChatComponent` is to provide the `messages` prop. This is a list of messages that initialize the chat UI. Each message is a dictionary that must have the following key-value pairs:
-- `sender`: The message sender, either `"user"` or `"assistant"`.
-- `text`: The content of the message.
+The simplest way to use the `dash_chat.ChatComponent` is to provide the `messages` prop. This is a list of messages that initialize the chat UI. Each message is an OpenAI-style dictionary that must have the following key-value pairs:
+- `role`: The message sender, either `"user"` or `"assistant"`.
+- `content`: The content of the message.
 
 A dash callback chat function is also required to handle how the messages are updated
 
@@ -43,7 +43,7 @@ app.layout = html.Div([
     ChatComponent(
         id="chat-component",
         messages=[
-            {"sender": "user", "text": "Hello!"},
+            {"role": "user", "content": "Hello!"},
         ],
     )
 ])
@@ -60,9 +60,9 @@ def handle_chat(new_message, messages):
 
     updated_messages = messages + [new_message]
 
-    if new_message["sender"] == "user":
+    if new_message["role"] == "user":
         time.sleep(2)
-        bot_response = {"sender": "assistant", "text": "Hello John Doe."}
+        bot_response = {"role": "assistant", "content": "Hello John Doe."}
         return updated_messages + [bot_response]
 
     return updated_messages
@@ -91,7 +91,7 @@ app.layout = html.Div([
     ChatComponent(
         id="chat-component",
         messages=[
-            {"sender": "user", "text": "Hello!"},
+            {"role": "user", "content": "Hello!"},
         ],
     )
 ])
@@ -108,19 +108,15 @@ def handle_chat(new_message, messages):
 
     updated_messages = messages + [new_message]
 
-    if new_message["sender"] == "user":
-        openai_messages = [
-            {"role": msg["sender"], "content": msg["text"]}
-            for msg in message
-        ]
+    if new_message["role"] == "user":
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
-            messages=openai_messages,
+            messages=updated_messages,
             temperature=1.0,
             max_tokens=150,
         )
 
-        bot_response = {"sender": "assistant", "text": response.choices[0].message.content.strip()}
+        bot_response = {"role": "assistant", "content": response.choices[0].message.content.strip()}
         return updated_messages + [bot_response]
 
     return updated_messages
@@ -143,7 +139,7 @@ if __name__ == "__main__":
 | **is_typing**                  | `dict`                    | `{ user: False, assistant: False }` | Indicates whether the user or assistant is typing. Keys include: `user` and `assistant`.      |
 | **message_input_container_style**| `dict`                    | `None`                        | Inline styles for the container holding the message input field.                             |
 | **message_input_style**         | `dict`                    | `None`                        | Inline styles for the message input field itself.                                            |
-| **messages**                  | `list of dicts`           | `None`                        | List of chat messages. Each message object must include: `sender` and `text`.                |
+| **messages**                  | `list of dicts`           | `None`                        | List of chat messages. Each message object must include: `role` and `content`.                |
 | **new_message**                | `dict`                    | `None`                        | Latest chat message appended to the `messages` array.                                        |
 | **theme**                     | `string`                  | `"lightTheme"`                | Theme for the chat interface. Options: `"lightTheme"` or `"darkTheme"`.                      |
 | **typing_indicator**           | `string`                  | `"dots"`                      | Type of typing indicator. Options: `"dots"` (animated dots) or `"spinner"` (spinner).        |
