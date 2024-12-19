@@ -7,7 +7,7 @@
  *         { sender: "assistant", text: "Hello! How can I assist you today?" }
  *     ]}
  *     typing_indicator="dots"
- *     theme="darkTheme"
+ *     theme="dark"
  *     custom_styles={{ backgroundColor: "#222", color: "#fff" }}
  *     is_typing={{ user: false, assistant: true }}
  * />
@@ -42,21 +42,25 @@ const ChatComponent = ({
     */
     messages: propMessages,
     theme,
-    custom_styles: customStyles,
+    container_style: containerStyle,
     typing_indicator: typingIndicator,
-    input_component: CustomInputComponent,
-    message_input_container_style: messageInputContainerStyle,
-    message_input_style: messageInputStyle,
+    input_container_style: inputContainerStyle,
+    input_text_style: inputTextStyle,
     setProps,
-    is_typing: isTyping,
     fill_height: fillHeight,
     fill_width: fillWidth,
 }) => {
     const [currentMessage, setCurrentMessage] = useState("");
     const [localMessages, setLocalMessages] = useState(propMessages || []);
     const messageEndRef = useRef(null);
+    const [showTyping, setShowTyping] = useState(false);
 
     useEffect(() => {
+        const lastMsg = propMessages.slice(-1).pop();
+
+        if (lastMsg.sender === "assistant" && showTyping) {
+            setShowTyping(false);
+        }
         setLocalMessages(propMessages || []);
     }, [propMessages]);
 
@@ -64,13 +68,10 @@ const ChatComponent = ({
         if (messageEndRef.current) {
             messageEndRef.current.scrollIntoView({ behavior: "smooth" });
         }
-    }, [localMessages, isTyping]);
+    }, [localMessages]);
 
     const handleInputChange = (e) => {
         setCurrentMessage(e.target.value);
-        if (setProps) {
-            setProps({ is_typing: { user: e.target.value.length > 0, assistant: isTyping?.assistant } });
-        }
     };
 
     const handleSendMessage = () => {
@@ -79,8 +80,13 @@ const ChatComponent = ({
             setLocalMessages((prevMessages) => [...prevMessages, newMessage]);
 
             if (setProps) {
-                setProps({ new_message: newMessage, is_typing: { user: false, assistant: !isTyping?.assistant } });
+                setProps({ new_message: newMessage });
             }
+
+            if (setProps) {
+                setProps({ new_message: newMessage });
+            }
+            setShowTyping(true);
 
             setCurrentMessage("");
         }
@@ -102,8 +108,8 @@ const ChatComponent = ({
     return (
         <div className="container">
             <div
-                className={`chat-container ${theme === "darkTheme" ? "default2" : "default1"}`}
-                style={{ ...customStyles, ...styleChatContainerSize }}
+                className={`chat-container ${theme === "dark" ? "default2" : "default1"}`}
+                style={{ ...containerStyle, ...styleChatContainerSize }}
             >
                 <div className="chat-messages">
                     {localMessages.map((message, index) => (
@@ -111,14 +117,8 @@ const ChatComponent = ({
                             {message.text}
                         </div>
                     ))}
-                    {isTyping?.user && (
+                    {showTyping && (
                         <div className="typing-indicator user-typing" data-testid="typing-indicator">
-                            {typingIndicator === "dots" && <TypingIndicatorDots />}
-                            {typingIndicator === "spinner" && <TypingIndicatorSpinner />}
-                        </div>
-                    )}
-                    {isTyping?.assistant && (
-                        <div className="typing-indicator assistant-typing">
                             {typingIndicator === "dots" && <TypingIndicatorDots />}
                             {typingIndicator === "spinner" && <TypingIndicatorSpinner />}
                         </div>
@@ -126,17 +126,13 @@ const ChatComponent = ({
                     <div ref={messageEndRef} />
                 </div>
                 <div className="chat-input">
-                    {CustomInputComponent ? (
-                        <CustomInputComponent onSend={handleSendMessage} />
-                    ) : (
-                        <MessageInput
-                            onSend={handleSendMessage}
-                            handleInputChange={handleInputChange}
-                            value={currentMessage}
-                            customStyles={messageInputContainerStyle}
-                            inputComponentStyles={messageInputStyle}
-                        />
-                    )}
+                    <MessageInput
+                        onSend={handleSendMessage}
+                        handleInputChange={handleInputChange}
+                        value={currentMessage}
+                        customStyles={inputContainerStyle}
+                        inputComponentStyles={inputTextStyle}
+                    />
                 </div>
             </div>
         </div>
@@ -166,13 +162,13 @@ ChatComponent.propTypes = {
     */
     setProps: PropTypes.func,
     /**
-     * Theme for the chat interface. Default is "lightTheme". Use "darkTheme" for a dark mode appearance.
+     * Theme for the chat interface. Default is "light". Use "dark" for a dark mode appearance.
     */
     theme: PropTypes.string,
     /**
-     * Inline styles to customize the chat container.
+     * Inline css styles to customize the chat container.
     */
-    custom_styles: PropTypes.object,
+    container_style: PropTypes.object,
     /**
      * The type of typing indicator to display. Options are:
      *    - `"dots"`: Displays animated dots.
@@ -180,30 +176,17 @@ ChatComponent.propTypes = {
     */
     typing_indicator: PropTypes.oneOf(["dots", "spinner"]),
     /**
-     * A custom React input component. If provided, it will override the default input field.
-    */
-    input_component: PropTypes.elementType,
-    /**
      * Latest chat message that was appended to messages array.
     */
     new_message: PropTypes.object,
     /**
      * Inline styles for the container holding the message input field.
     */
-    message_input_container_style: PropTypes.object,
+    input_container_style: PropTypes.object,
     /**
      * Inline styles for the message input field itself.
     */
-    message_input_style: PropTypes.object,
-    /**
-     * Indicates whether the user or assistant is typing. Should be an object with:
-     *    - `user` (boolean): True if the user is typing.
-     *    - `assistant` (boolean): True if the assistant is typing.
-    */
-    is_typing: PropTypes.shape({
-        user: PropTypes.bool,
-        assistant: PropTypes.bool,
-    }),
+    input_text_style: PropTypes.object,
     /**
      *  Whether to vertically fill the screen with the chat container. If False, centers and constrains container to a maximum height.
     */
@@ -216,14 +199,12 @@ ChatComponent.propTypes = {
 
 ChatComponent.defaultProps = {
     setProps: () => {},
-    theme: "lightTheme",
-    custom_styles: null,
+    theme: "light",
+    container_style: null,
     typing_indicator: "dots",
-    input_component: null,
     new_message: null,
-    message_input_container_style: null,
-    message_input_style: null,
-    is_typing: { user: false, assistant: false },
+    input_container_style: null,
+    input_text_style: null,
     fill_height: true,
     fill_width: true
 };

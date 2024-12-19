@@ -34,6 +34,7 @@ A dash callback chat function is also required to handle how the messages are up
 
 ```python
 import time
+import dash
 from dash import callback, html, Input, Output, State
 from dash_chat import ChatComponent
 
@@ -50,7 +51,7 @@ app.layout = html.Div([
 
 @callback(
     Output("chat-component", "messages")
-    Input("chat-component", "newMessage"),
+    Input("chat-component", "new_message"),
     State("chat-component", "messages"),
     prevent_initial_call=True,
 )
@@ -76,7 +77,7 @@ Using **OpenAI** with dash-chat (requires the `openai` package - install it by r
 
 ```python
 import os
-import time
+import dash
 from dash import callback, html, Input, Output, State
 from dash_chat import ChatComponent
 from openai import OpenAI
@@ -91,14 +92,18 @@ app.layout = html.Div([
     ChatComponent(
         id="chat-component",
         messages=[
+<<<<<<< HEAD
             {"role": "user", "content": "Hello!"},
+=======
+            {"sender": "assistant", "text": "Hello!"},
+>>>>>>> db5ed0d (Remove some redundant props and update how the typing indeicator is displayed)
         ],
     )
 ])
 
 @callback(
-    Output("chat-component", "messages")
-    Input("chat-component", "newMessage"),
+    Output("chat-component", "messages"),
+    Input("chat-component", "new_message"),
     State("chat-component", "messages"),
     prevent_initial_call=True,
 )
@@ -108,7 +113,15 @@ def handle_chat(new_message, messages):
 
     updated_messages = messages + [new_message]
 
+<<<<<<< HEAD
     if new_message["role"] == "user":
+=======
+    if new_message["sender"] == "user":
+        openai_messages = [
+            {"role": msg["sender"], "content": msg["text"]}
+            for msg in messages
+        ]
+>>>>>>> db5ed0d (Remove some redundant props and update how the typing indeicator is displayed)
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=updated_messages,
@@ -131,15 +144,12 @@ if __name__ == "__main__":
 
 | Prop Name                     | Type                       | Default Value                 | Description                                                                                   |
 |-------------------------------|----------------------------|-------------------------------|-----------------------------------------------------------------------------------------------|
-| **id**                        | `string`                  | `None`                        | Unique identifier for the component, required for Dash callbacks.                             |
-| **custom_styles**              | `dict`                    | `None`                        | Inline styles to customize the chat container.                                               |
-| **fill_height**                | `boolean`                 | `True`                        | Whether to vertically fill the screen with the chat container. If `False`, constrains height. |
-| **fill_width**                 | `boolean`                 | `True`                        | Whether to horizontally fill the screen with the chat container. If `False`, constrains width.|
-| **input_component**            | `React Component`         | `None`                        | A custom React input component that overrides the default input field.                       |
-| **is_typing**                  | `dict`                    | `{ user: False, assistant: False }` | Indicates whether the user or assistant is typing. Keys include: `user` and `assistant`.      |
-| **message_input_container_style**| `dict`                    | `None`                        | Inline styles for the container holding the message input field.                             |
-| **message_input_style**         | `dict`                    | `None`                        | Inline styles for the message input field itself.                                            |
-| **messages**                  | `list of dicts`           | `None`                        | List of chat messages. Each message object must include: `role` and `content`.                |
-| **new_message**                | `dict`                    | `None`                        | Latest chat message appended to the `messages` array.                                        |
-| **theme**                     | `string`                  | `"lightTheme"`                | Theme for the chat interface. Options: `"lightTheme"` or `"darkTheme"`.                      |
-| **typing_indicator**           | `string`                  | `"dots"`                      | Type of typing indicator. Options: `"dots"` (animated dots) or `"spinner"` (spinner).        |
+| **id**                        | `string`                  | `None`                         | Unique identifier for the component, required for Dash callbacks.                             |
+| **container_style**           | `dict`                    | `None`                         | Inline css styles to customize the chat container.                                            |
+| **fill_height**               | `boolean`                 | `True`                         | Whether to vertically fill the screen with the chat container. If `False`, constrains height. |
+| **fill_width**                | `boolean`                 | `True`                         | Whether to horizontally fill the screen with the chat container. If `False`, constrains width.|
+| **input_container_style**     | `dict`                    | `None`                         | Inline styles for the container holding the message input field.                             |
+| **input_text_style**          | `dict`                    | `None`                         | Inline styles for the message input field itself.                                            |
+| **messages**                  | `list of dicts`           | `None`                         | List of chat messages. Each message object must include: `role` and `content`.               |
+| **theme**                     | `string`                  | `"light"`                      | Theme for the chat interface. Options: `"light"` or `"dark"`.                                |
+| **typing_indicator**          | `string`                  | `"dots"`                       | Type of typing indicator. Options: `"dots"` (animated dots) or `"spinner"` (spinner).        |

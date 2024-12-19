@@ -32,13 +32,12 @@ app = Dash(__name__)
 app.layout = html.Div(
     [
         dc.ChatComponent(
-            id="chat-component",
+            id="chat-box",
             messages=[
                 {"sender": "assistant", "text": "Hello! How can I assist you today?"},
             ],
             typing_indicator="dots",
-            theme="lightTheme",
-            is_typing={"user": False, "assistant": False},
+            theme="light",
             fill_height=False,
             fill_width=False,
         ),
@@ -48,24 +47,24 @@ app.layout = html.Div(
 
 
 @app.callback(
-    [Output("chat-component", "messages"), Output("chat-component", "is_typing")],
-    Input("chat-component", "new_message"),
-    State("chat-component", "messages"),
+    Output("chat-box", "messages"),
+    Input("chat-box", "new_message"),
+    State("chat-box", "messages"),
     prevent_initial_call=True,
 )
 def handle_chat(new_message, messages):
     if not new_message:
-        return messages, {"user": False, "assistant": False}
+        return messages
 
     updated_messages = messages + [new_message]
 
     if new_message["sender"] == "user":
-        time.sleep(2)
+        time.sleep(10)
         # bot_response = predict(messages)
         bot_response = {"sender": "assistant", "text": "Hello John Doe."}
-        return updated_messages + [bot_response], {"user": False, "assistant": False}
+        return updated_messages + [bot_response]
 
-    return updated_messages, {"user": False, "assistant": False}
+    return updated_messages
 
 
 if __name__ == "__main__":
