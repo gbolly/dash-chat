@@ -26,7 +26,7 @@ jobs:
 
   python:
     docker:
-      - image: cimg/python:3.13
+      - image: cimg/python:3.13.1-browser
     steps:
       - checkout
       - restore_cache:
@@ -36,11 +36,15 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apt-get update && apt-get install -y --no-install-recommends chromium-browser
             python -m venv venv
             . venv/bin/activate
             pip install --upgrade pip
             pip install -r tests/requirements.txt
+       - run:
+          name: Verify Chromium and Chromedriver
+          command: |
+            chromium-browser --version
+            chromedriver --version
       - save_cache:
           paths:
             - ~/.cache/pip
