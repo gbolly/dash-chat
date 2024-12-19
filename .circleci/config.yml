@@ -43,7 +43,7 @@ jobs:
       - run:
           name: Verify Chromium and Chromedriver
           command: |
-            chromium-browser --version
+            . venv/bin/activate
             chromedriver --version
       - save_cache:
           paths:

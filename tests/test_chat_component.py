@@ -1,5 +1,6 @@
-from dash.testing.application_runners import import_app
+import chromedriver_binary  # noqa
 import pytest
+from dash.testing.application_runners import import_app
 
 
 @pytest.mark.usefixtures("dash_duo")
