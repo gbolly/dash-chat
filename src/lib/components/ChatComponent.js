@@ -4,7 +4,7 @@
  * <ChatComponent
  *     id="chat"
  *     messages={[
- *         { sender: "assistant", text: "Hello! How can I assist you today?" }
+ *         { role: "assistant", content: "Hello! How can I assist you today?" }
  *     ]}
  *     typing_indicator="dots"
  *     theme="dark"
@@ -17,12 +17,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 
-import MessageInput from "./ChatMessageInput";
-import TypingIndicatorDots from "./DotsIndicator";
-import TypingIndicatorSpinner from "./SpinnerIndicator";
+import MessageInput from "../../private/ChatMessageInput";
+import TypingIndicatorDots from "../../private/DotsIndicator";
+import TypingIndicatorSpinner from "../../private/SpinnerIndicator";
 
-import "../styles/chatStyles1.css";
-import "../styles/chatStyles2.css";
+import "../../styles/chatStyles1.css";
+import "../../styles/chatStyles2.css";
 
 /**
  * ChatComponent - A React-based chat interface with customizable styles and typing indicators.
@@ -58,7 +58,7 @@ const ChatComponent = ({
     useEffect(() => {
         const lastMsg = propMessages.slice(-1).pop();
 
-        if (lastMsg.sender === "assistant" && showTyping) {
+        if (lastMsg?.role === "assistant" && showTyping) {
             setShowTyping(false);
         }
         setLocalMessages(propMessages || []);
@@ -76,18 +76,14 @@ const ChatComponent = ({
 
     const handleSendMessage = () => {
         if (currentMessage.trim()) {
-            const newMessage = { sender: "user", text: currentMessage };
+            const newMessage = { role: "user", content: currentMessage };
             setLocalMessages((prevMessages) => [...prevMessages, newMessage]);
 
             if (setProps) {
                 setProps({ new_message: newMessage });
             }
 
-            if (setProps) {
-                setProps({ new_message: newMessage });
-            }
             setShowTyping(true);
-
             setCurrentMessage("");
         }
     };
@@ -113,8 +109,8 @@ const ChatComponent = ({
             >
                 <div className="chat-messages">
                     {localMessages.map((message, index) => (
-                        <div key={index} className={`chat-bubble ${message.sender}`}>
-                            {message.text}
+                        <div key={index} className={`chat-bubble ${message.role}`}>
+                            {message.content}
                         </div>
                     ))}
                     {showTyping && (
@@ -148,13 +144,13 @@ ChatComponent.propTypes = {
     id: PropTypes.string,
     /**
      * An array of options. The list of chat messages. Each message object should have:
-     *    - `sender` (string): The message sender, either "user" or "assistant".
-     *    - `text` (string): The content of the message.
+     *    - `role` (string): The message sender, either "user" or "assistant".
+     *    - `content` (string): The content of the message.
     */
     messages: PropTypes.arrayOf(
         PropTypes.shape({
-            sender: PropTypes.oneOf(["user", "assistant"]),
-            text: PropTypes.string.isRequired,
+            role: PropTypes.oneOf(["user", "assistant"]),
+            content: PropTypes.string.isRequired,
         })
     ),
     /**

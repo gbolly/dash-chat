@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import ChatComponent from "../../src/lib/components/ChatComponent";
 
 describe("ChatComponent", () => {
@@ -12,12 +12,11 @@ describe("ChatComponent", () => {
     const defaultProps = {
         id: "chat",
         messages: [
-            { sender: "assistant", text: "Hello! How can I assist you today?" },
-            { sender: "user", text: "I need help with my account." },
+            { role: "assistant", content: "Hello! How can I assist you today?" },
+            { role: "user", content: "I need help with my account." },
         ],
-        theme: "lightTheme",
+        theme: "light",
         typing_indicator: "dots",
-        is_typing: { user: false, assistant: false },
         setProps: mockSetProps,
         fill_height: true,
         fill_width: true,
@@ -30,14 +29,36 @@ describe("ChatComponent", () => {
     });
 
     it("applies the correct theme class", () => {
-        const { container } = render(<ChatComponent {...defaultProps} theme="darkTheme" />);
+        const { container } = render(<ChatComponent {...defaultProps} theme="dark" />);
         const divs = container.querySelectorAll("div");
         expect(divs[1]).toHaveClass("default2");
     });
 
-    it("displays typing indicators when isTyping is true", () => {
-        render(<ChatComponent {...defaultProps} is_typing={{ user: true, assistant: true }} />);
-        expect(screen.getByTestId("typing-indicator")).toBeInTheDocument();
+    it("hides typing indicators after assistant response", async () => {
+        const { rerender } = render(<ChatComponent {...defaultProps} />);
+        const inputField = screen.getByRole("textbox");
+        fireEvent.change(inputField, { target: { value: "This is a test message" } });
+        const sendButton = screen.getByRole("button", { name: /send/i });
+        fireEvent.click(sendButton);
+    
+        await waitFor(() => {
+            expect(screen.getByTestId("typing-indicator")).toBeInTheDocument();
+        });
+    
+        // Simulate assistant response
+        rerender(
+            <ChatComponent
+                {...defaultProps}
+                messages={[
+                    { role: "user", content: "Hello" },
+                    { role: "assistant", content: "Hi there!" },
+                ]}
+            />
+        );
+    
+        await waitFor(() => {
+            expect(screen.queryByTestId("typing-indicator")).not.toBeInTheDocument();
+        });
     });
 
     it("allows the user to type a message and send it", () => {
@@ -50,13 +71,12 @@ describe("ChatComponent", () => {
 
         fireEvent.click(sendButton);
         expect(mockSetProps).toHaveBeenCalledWith({
-            new_message: { sender: "user", text: "This is a test message" },
-            is_typing: { user: false, assistant: true },
+            new_message: { role: "user", content: "This is a test message" },
         });
     });
 
     it("should scroll to the bottom when a new message is added", () => {
-        const { getByTestId } = render(<ChatComponent localMessages={[]} is_typing={false} />);
+        const { getByTestId } = render(<ChatComponent messages={[{ role: "assistant", content: "This is a test message" }]} />);
         
         fireEvent.click(getByTestId("send-button"));
         expect(window.HTMLElement.prototype.scrollIntoView).toHaveBeenCalled();

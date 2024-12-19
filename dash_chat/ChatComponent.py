@@ -38,15 +38,15 @@ Keyword arguments:
 
 - messages (list of dicts; optional):
     An array of options. The list of chat messages. Each message
-    object should have:    - `sender` (string): The message sender,
-    either \"user\" or \"assistant\".    - `text` (string): The
+    object should have:    - `role` (string): The message sender,
+    either \"user\" or \"assistant\".    - `content` (string): The
     content of the message.
 
     `messages` is a list of dicts with keys:
 
-    - sender (a value equal to: "user", "assistant"; optional)
+    - role (a value equal to: "user", "assistant"; optional)
 
-    - text (string; required)
+    - content (string; required)
 
 - new_message (dict; optional):
     Latest chat message that was appended to messages array.

@@ -10,19 +10,16 @@ client = OpenAI(api_key=api_key)
 
 
 def predict(message):
-    openai_messages = [
-        {"role": msg["sender"], "content": msg["text"]} for msg in message
-    ]
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
-        messages=openai_messages,
+        messages=message,
         temperature=1.0,
         max_tokens=150,
     )
 
     bot_message = {
-        "sender": "assistant",
-        "text": response.choices[0].message.content.strip(),
+        "role": "assistant",
+        "content": response.choices[0].message.content.strip(),
     }
     return bot_message
 
@@ -34,7 +31,7 @@ app.layout = html.Div(
         dc.ChatComponent(
             id="chat-box",
             messages=[
-                {"sender": "assistant", "text": "Hello! How can I assist you today?"},
+                {"role": "assistant", "content": "Hello! How can I assist you today?"},
             ],
             typing_indicator="dots",
             theme="light",
@@ -58,10 +55,10 @@ def handle_chat(new_message, messages):
 
     updated_messages = messages + [new_message]
 
-    if new_message["sender"] == "user":
-        time.sleep(10)
+    if new_message["role"] == "user":
+        time.sleep(2)
         # bot_response = predict(messages)
-        bot_response = {"sender": "assistant", "text": "Hello John Doe."}
+        bot_response = {"role": "assistant", "content": "Hello John Doe."}
         return updated_messages + [bot_response]
 
     return updated_messages

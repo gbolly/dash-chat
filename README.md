@@ -92,11 +92,7 @@ app.layout = html.Div([
     ChatComponent(
         id="chat-component",
         messages=[
-<<<<<<< HEAD
             {"role": "user", "content": "Hello!"},
-=======
-            {"sender": "assistant", "text": "Hello!"},
->>>>>>> db5ed0d (Remove some redundant props and update how the typing indeicator is displayed)
         ],
     )
 ])
@@ -113,15 +109,7 @@ def handle_chat(new_message, messages):
 
     updated_messages = messages + [new_message]
 
-<<<<<<< HEAD
     if new_message["role"] == "user":
-=======
-    if new_message["sender"] == "user":
-        openai_messages = [
-            {"role": msg["sender"], "content": msg["text"]}
-            for msg in messages
-        ]
->>>>>>> db5ed0d (Remove some redundant props and update how the typing indeicator is displayed)
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=updated_messages,
