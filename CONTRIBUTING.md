@@ -82,7 +82,7 @@ NB:
     $ pip install dash_chat-0.0.1.tar.gz
     ```
 
-4. If it works, then you can publish the component to NPM and PyPI:
+4. If it works, then you can publish the component to PyPI:
     1. Publish on PyPI
         ```
         $ twine upload dist/*

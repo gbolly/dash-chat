@@ -2,21 +2,9 @@
 
 [![PyPI version](https://badge.fury.io/py/dash-chat.svg)](https://pypi.org/project/dash-chat/)
 [![Supported Python versions](https://img.shields.io/pypi/pyversions/dash-chat.svg)](https://pypi.org/project/dash-chat/)
-[![CircleCI Builds](https://circleci.com/gh/gbolly/dash-chat.svg?style=shield)](https://circleci.com/gh/gbolly/dash-chat)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/gbolly/dash-chat/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/gbolly/dash-chat/tree/main)
 
 dash-chat is a Dash component library chat interface. It provides a customizable and responsive chat UI with support for typing indicators, themes, and state management.
-
-## License
-
-This project is licensed under the MIT License. See the LICENSE file for details.
-
-## Features
-
-- Uses the `dash_chat.ChatComponent`, a high-level abstraction to display messages exchanged between two users, typically a **user** and an **assistant**.
-- Customizable themes and inline styles for the chat UI.
-- Typing indicators for both the user and the assistant.
-- Easy integration with Dash using the `set_props` callback for state management.
-- Support for custom input components.
 
 ## Installation
 ```
@@ -31,48 +19,6 @@ The simplest way to use the `dash_chat.ChatComponent` is to provide the `message
 A dash callback chat function is also required to handle how the messages are updated
 
 ### Example 1
-
-```python
-import time
-import dash
-from dash import callback, html, Input, Output, State
-from dash_chat import ChatComponent
-
-app = dash.Dash(__name__)
-
-app.layout = html.Div([
-    ChatComponent(
-        id="chat-component",
-        messages=[
-            {"role": "user", "content": "Hello!"},
-        ],
-    )
-])
-
-@callback(
-    Output("chat-component", "messages")
-    Input("chat-component", "new_message"),
-    State("chat-component", "messages"),
-    prevent_initial_call=True,
-)
-def handle_chat(new_message, messages):
-    if not new_message:
-        return messages
-
-    updated_messages = messages + [new_message]
-
-    if new_message["role"] == "user":
-        time.sleep(2)
-        bot_response = {"role": "assistant", "content": "Hello John Doe."}
-        return updated_messages + [bot_response]
-
-    return updated_messages
-
-if __name__ == "__main__":
-    app.run_server(debug=True)
-```
-
-### Example 2
 Using **OpenAI** with dash-chat (requires the `openai` package - install it by running `pip install openai`)
 
 ```python
@@ -92,7 +38,7 @@ app.layout = html.Div([
     ChatComponent(
         id="chat-component",
         messages=[
-            {"role": "user", "content": "Hello!"},
+            {"role": "assistant", "content": "Hello!"},
         ],
     )
 ])
@@ -126,6 +72,49 @@ if __name__ == "__main__":
     app.run_server(debug=True)
 ```
 
+### Example 2
+
+```python
+import time
+import dash
+from dash import callback, html, Input, Output, State
+from dash_chat import ChatComponent
+
+
+app = dash.Dash(__name__)
+
+app.layout = html.Div([
+    ChatComponent(
+        id="chat-component",
+        messages=[
+            {"role": "assistant", "content": "Hello!"},
+        ],
+    )
+])
+
+@callback(
+    Output("chat-component", "messages"),
+    Input("chat-component", "new_message"),
+    State("chat-component", "messages"),
+    prevent_initial_call=True,
+)
+def handle_chat(new_message, messages):
+    if not new_message:
+        return messages
+
+    updated_messages = messages + [new_message]
+
+    if new_message["role"] == "user":
+        time.sleep(2)
+        bot_response = {"role": "assistant", "content": "Hello John Doe."}
+        return updated_messages + [bot_response]
+
+    return updated_messages
+
+if __name__ == "__main__":
+    app.run_server(debug=True)
+```
+
 ### **Props**
 
 `ChatComponent` can be configured with the following properties:
@@ -141,3 +130,15 @@ if __name__ == "__main__":
 | **messages**                  | `list of dicts`           | `None`                         | List of chat messages. Each message object must include: `role` and `content`.               |
 | **theme**                     | `string`                  | `"light"`                      | Theme for the chat interface. Options: `"light"` or `"dark"`.                                |
 | **typing_indicator**          | `string`                  | `"dots"`                       | Type of typing indicator. Options: `"dots"` (animated dots) or `"spinner"` (spinner).        |
+
+## Features
+
+- Uses the `dash_chat.ChatComponent`, a high-level abstraction to display messages exchanged between two users, typically a **user** and an **assistant**.
+- Customizable themes and inline styles for the chat UI.
+- Typing indicators for both the user and the assistant.
+- Easy integration with Dash using the `set_props` callback for state management.
+- Support for custom input components.
+
+## License
+
+This project is licensed under the MIT License. See the LICENSE file for details.
