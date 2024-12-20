@@ -21,7 +21,8 @@
     "build": "npm run build:js && npm run build:py",
     "build:activated": "npm run build:js && npm run build:py-activated",
     "test": "jest",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "lint:py": "black --check . && flake8 ."
   },
   "author": "Gbolahan Okerayi <okerayigbolahan@gmail.com>",
   "license": "MIT",

@@ -26,7 +26,7 @@ def predict(message):
     except Exception as e:
         return {
             "role": "assistant",
-            "content": f"An unexpected error occurred: {str(e)}. Please contact support if this persists.",
+            "content": f"An unexpected error occurred: {str(e)}.",
         }
 
 
