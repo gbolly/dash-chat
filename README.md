@@ -21,6 +21,8 @@ A dash callback chat function is also required to handle how the messages are up
 ### Example 1
 Using **OpenAI** with dash-chat (requires the `openai` package - install it by running `pip install openai`)
 
+![dash-chat-demo](./dash-chat-demo.gif)
+
 ```python
 import os
 import dash
