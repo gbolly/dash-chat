@@ -44,27 +44,23 @@ git checkout -b new-branch-name
 ```
 git push origin new-branch-name
 ```
-5. Go to your fork https://github.com/<your-github-username>/dash-chat and create a pull request off of your branch against the https://github.com/gbolly/dash-chat repo.
+5. Go to your fork https://github.com/`<your-github-username>`/dash-chat and create a pull request off of your branch against the https://github.com/gbolly/dash-chat repo.
 
 NB:
-- If necessary, create a new file for large and reusable components. Ensure to reflect props that are required in `src/lib/components/ChatComponent.js`. 
-- The demo app is in `src/demo` and you will import your example component code into your demo app.
+- If necessary, create a new file for large and reusable components in the `src` directory. Ensure to reflect props that are required in `src/lib/components/ChatComponent.js` and updating the `ChatComponent.propTypes` and `ChatComponent.defaultProps`. 
+
 - Test your code in a Python environment:
     1. Build your code
         ```
-        $ npm run build
+        $ npm run build:py
         ```
-    2. Run and modify the `usage.py` sample dash app:
+    2. Modify and run the `usage.py` sample dash app:
         ```
         $ python usage.py
         ```
 - Write tests for your component.
-    - A sample test is available in `tests/test_usage.py`, it will load `usage.py` and you can then automate interactions with selenium.
-    - Run the tests with `$ pytest tests`.
-    - The Dash team uses these types of integration tests extensively. Browse the Dash component code on GitHub for more examples of testing (e.g. https://github.com/plotly/dash-core-components)
-- Add custom styles to your component by putting your custom CSS files into your distribution folder (`dash_chat`).
-    - Make sure that they are referenced in `MANIFEST.in` so that they get properly included when you're ready to publish your component.
-    - Make sure the stylesheets are added to the `_css_dist` dict in `dash_chat/__init__.py` so dash will serve them automatically when the component suite is requested.
+    - Update test cases for to reflect the new changes for both the React component in `tests/js-unit` and integration test for Python in `tests/test_chat_component.py`, it will load `usage.py` and you can then automate interactions with selenium.
+    - Run the tests with `$ pytest tests` and `$ npm tests`.
 - [Review your code](./review_checklist.md)
 
 ### Create a production build and publish:
@@ -95,13 +91,3 @@ NB:
         ```
         $ rm -rf dist
         ```
-    3. Publish on NPM (Optional if chosen False in `publish_on_npm`)
-        ```
-        $ npm publish
-        ```
-        _Publishing your component to NPM will make the JavaScript bundles available on the unpkg CDN. By default, Dash serves the component library's CSS and JS locally, but if you choose to publish the package to NPM you can set `serve_locally` to `False` and you may see faster load times._
-
-5. Share your component with the community! https://community.plotly.com/c/dash
-    1. Publish this repository to GitHub
-    2. Tag your GitHub repository with the plotly-dash tag so that it appears here: https://github.com/topics/plotly-dash
-    3. Create a post in the Dash community forum: https://community.plotly.com/c/dash

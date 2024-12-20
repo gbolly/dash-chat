@@ -10,18 +10,24 @@ client = OpenAI(api_key=api_key)
 
 
 def predict(message):
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=message,
-        temperature=1.0,
-        max_tokens=150,
-    )
+    try:
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=message,
+            temperature=1.0,
+            max_tokens=150,
+        )
 
-    bot_message = {
-        "role": "assistant",
-        "content": response.choices[0].message.content.strip(),
-    }
-    return bot_message
+        bot_message = {
+            "role": "assistant",
+            "content": response.choices[0].message.content.strip(),
+        }
+        return bot_message
+    except Exception as e:
+        return {
+            "role": "assistant",
+            "content": f"An unexpected error occurred: {str(e)}. Please contact support if this persists.",
+        }
 
 
 app = Dash(__name__)
@@ -57,7 +63,7 @@ def handle_chat(new_message, messages):
 
     if new_message["role"] == "user":
         time.sleep(2)
-        # bot_response = predict(messages)
+        # bot_response = predict(updated_messages)
         bot_response = {"role": "assistant", "content": "Hello John Doe."}
         return updated_messages + [bot_response]
 
