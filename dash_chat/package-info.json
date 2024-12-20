@@ -1,6 +1,6 @@
 {
   "name": "dash-chat",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A chat component for Dash",
   "repository": {
     "type": "git",
@@ -19,7 +19,9 @@
     "build:py": "dash-generate-components ./src/lib/components dash_chat -p package-info.json",
     "build:py-activated": "(. venv/bin/activate || venv\\scripts\\activate && npm run build:py)",
     "build": "npm run build:js && npm run build:py",
-    "build:activated": "npm run build:js && npm run build:py-activated"
+    "build:activated": "npm run build:js && npm run build:py-activated",
+    "test": "jest",
+    "lint": "eslint src"
   },
   "author": "Gbolahan Okerayi <okerayigbolahan@gmail.com>",
   "license": "MIT",
@@ -33,6 +35,8 @@
     "@babel/preset-react": "^7.22.3",
     "@plotly/dash-component-plugins": "^1.2.3",
     "@plotly/webpack-dash-dynamic-import": "^1.2.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^9.1.2",
     "copyfiles": "^2.1.1",
@@ -41,12 +45,15 @@
     "eslint-config-prettier": "^6.0.0",
     "eslint-plugin-import": "^2.18.0",
     "eslint-plugin-react": "^7.14.2",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "prop-types": "^15.8.1",
-    "react": "^16.8.6",
+    "react": "^19.0.0",
     "react-docgen": "^5.4.3",
-    "react-dom": "^16.8.6",
+    "react-dom": "^19.0.0",
     "style-loader": "^3.3.3",
-    "styled-jsx": "^3.2.1",
+    "styled-jsx": "^5.1.6",
     "webpack": "^5.84.1",
     "webpack-cli": "^5.1.1",
     "webpack-dev-server": "^4.15.0"

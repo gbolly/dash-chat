@@ -1,71 +1,41 @@
-import os
 import time
-import dash_chat as dc
-from dash import Dash, html, Input, Output, State
-from openai import OpenAI
+import dash
+from dash import callback, html, Input, Output, State
+from dash_chat import ChatComponent
 
 
-api_key = os.environ.get("OPEN_API_KEY")
-client = OpenAI(api_key=api_key)
-
-
-def predict(message):
-    openai_messages = [
-        {"role": msg["sender"], "content": msg["text"]}
-        for msg in message
-    ]
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=openai_messages,
-        temperature=1.0,
-        max_tokens=150,
-    )
-
-    bot_message = {"sender": "assistant", "text": response.choices[0].message.content.strip()}
-    return bot_message
-
-
-app = Dash(__name__)
+app = dash.Dash(__name__)
 
 app.layout = html.Div(
     [
-        dc.ChatComponent(
+        ChatComponent(
             id="chat-component",
             messages=[
-                {"sender": "assistant", "text": "Hello! How can I assist you today?"},
+                {"role": "assistant", "content": "Hello!"},
             ],
-            typingIndicator="dots",
-            theme="lightTheme",
-            messageInputStyle={"backgroundColor": "#fff", "color": "#000"},
-            isTyping={"user": False, "assistant": False}
-        ),
-        html.Div(id="output")
+        )
     ]
 )
 
 
-@app.callback(
-    [
-        Output("chat-component", "messages"),
-        Output("chat-component", "isTyping")
-    ],
-    Input("chat-component", "newMessage"),
+@callback(
+    Output("chat-component", "messages"),
+    Input("chat-component", "new_message"),
     State("chat-component", "messages"),
     prevent_initial_call=True,
 )
 def handle_chat(new_message, messages):
     if not new_message:
-        return messages, {"user": False, "assistant": False}
+        return messages
 
     updated_messages = messages + [new_message]
 
-    if new_message["sender"] == "user":
+    if new_message["role"] == "user":
         time.sleep(2)
-        # bot_response = predict(messages)
-        bot_response = {"sender": "assistant", "text": "Hello Gbolahan."}
-        return updated_messages + [bot_response], {"user": False, "assistant": False}
+        bot_response = {"role": "assistant", "content": "Hello John Doe."}
+        return updated_messages + [bot_response]
 
-    return updated_messages, {"user": False, "assistant": False}
+    return updated_messages
 
 
 if __name__ == "__main__":
