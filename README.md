@@ -127,19 +127,11 @@ if __name__ == "__main__":
 | **container_style**           | `dict`                    | `None`                         | Inline css styles to customize the chat container.                                            |
 | **fill_height**               | `boolean`                 | `True`                         | Whether to vertically fill the screen with the chat container. If `False`, constrains height. |
 | **fill_width**                | `boolean`                 | `True`                         | Whether to horizontally fill the screen with the chat container. If `False`, constrains width.|
-| **input_container_style**     | `dict`                    | `None`                         | Inline styles for the container holding the message input field.                             |
-| **input_text_style**          | `dict`                    | `None`                         | Inline styles for the message input field itself.                                            |
+| **input_container_style**     | `dict`                    | `None`                         | Inline css styles for the container holding the message input field.                             |
+| **input_text_style**          | `dict`                    | `None`                         | Inline css styles for the message input field itself.                                            |
 | **messages**                  | `list of dicts`           | `None`                         | List of chat messages. Each message object must include: `role` and `content`.               |
 | **theme**                     | `string`                  | `"light"`                      | Theme for the chat interface. Options: `"light"` or `"dark"`.                                |
 | **typing_indicator**          | `string`                  | `"dots"`                       | Type of typing indicator. Options: `"dots"` (animated dots) or `"spinner"` (spinner).        |
-
-## Features
-
-- Uses the `dash_chat.ChatComponent`, a high-level abstraction to display messages exchanged between two users, typically a **user** and an **assistant**.
-- Customizable themes and inline styles for the chat UI.
-- Typing indicators for both the user and the assistant.
-- Easy integration with Dash using the `set_props` callback for state management.
-- Support for custom input components.
 
 ## License
 

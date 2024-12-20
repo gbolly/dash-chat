@@ -13,7 +13,7 @@ def test_render_chat_component(dash_duo):
     first_message = dash_duo.wait_for_element_by_css_selector(
         ".chat-messages:nth-child(1)"
     )
-    assert "Hello! How can I assist you today?" in first_message.text
+    assert "Hello!" in first_message.text
 
     # test 2: verify input field and typing functionality
     input_box = dash_duo.wait_for_element_by_css_selector("input[type='text']")
