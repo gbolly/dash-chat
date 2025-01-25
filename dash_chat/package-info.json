@@ -1,6 +1,6 @@
 {
   "name": "dash-chat",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A chat component for Dash",
   "repository": {
     "type": "git",
@@ -21,11 +21,14 @@
     "build": "npm run build:js && npm run build:py",
     "build:activated": "npm run build:js && npm run build:py-activated",
     "test": "jest",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "lint:py": "black --check . && flake8 ."
   },
   "author": "Gbolahan Okerayi <okerayigbolahan@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "linkify-react": "^4.2.0",
+    "linkifyjs": "^4.2.0",
     "ramda": "^0.26.1"
   },
   "devDependencies": {

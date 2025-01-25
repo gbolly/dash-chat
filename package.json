@@ -1,6 +1,6 @@
 {
   "name": "dash-chat",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A chat component for Dash",
   "repository": {
     "type": "git",
@@ -27,6 +27,8 @@
   "author": "Gbolahan Okerayi <okerayigbolahan@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "linkify-react": "^4.2.0",
+    "linkifyjs": "^4.2.0",
     "ramda": "^0.26.1"
   },
   "devDependencies": {

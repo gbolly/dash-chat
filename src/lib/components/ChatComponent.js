@@ -15,11 +15,13 @@
 */
 
 import React, { useEffect, useRef, useState } from "react";
+import Linkify from "linkify-react";
 import PropTypes from "prop-types";
 
 import MessageInput from "../../private/ChatMessageInput";
 import TypingIndicatorDots from "../../private/DotsIndicator";
 import TypingIndicatorSpinner from "../../private/SpinnerIndicator";
+import { bubbleStyle as sharedBubbleStyle } from "../../styles/sharedStyles";
 
 import "../../styles/chatStyles1.css";
 import "../../styles/chatStyles2.css";
@@ -49,7 +51,13 @@ const ChatComponent = ({
     setProps,
     fill_height: fillHeight,
     fill_width: fillWidth,
+    bubble_styles: bubbleStyles,
 }) => {
+    const linkifyOptions = {
+        className: "link-message",
+        target: "_blank",
+    };
+    const { user: userBubbleStyle, assistant: assistantBubbleStyle } = bubbleStyles || {};
     const [currentMessage, setCurrentMessage] = useState("");
     const [localMessages, setLocalMessages] = useState(propMessages || []);
     const messageEndRef = useRef(null);
@@ -108,11 +116,18 @@ const ChatComponent = ({
                 style={{ ...containerStyle, ...styleChatContainerSize }}
             >
                 <div className="chat-messages">
-                    {localMessages.map((message, index) => (
-                        <div key={index} className={`chat-bubble ${message.role}`}>
-                            {message.content}
-                        </div>
-                    ))}
+                    {localMessages.map((message, index) => {
+                        const bubbleStyle = message.role === "user" ? userBubbleStyle : assistantBubbleStyle;
+                        return (
+                            <div
+                                key={index}
+                                className={`chat-bubble ${message.role}`}
+                                style={bubbleStyle}
+                            >
+                                <Linkify options={linkifyOptions}>{message.content}</Linkify>
+                            </div>
+                        )
+                    })}
                     {showTyping && (
                         <div className="typing-indicator user-typing" data-testid="typing-indicator">
                             {typingIndicator === "dots" && <TypingIndicatorDots />}
@@ -191,6 +206,13 @@ ChatComponent.propTypes = {
      * Whether to horizontally fill the screen with the chat container. If False, centers and constrains container to a maximum width.
     */
     fill_width: PropTypes.bool,
+    /**
+     * Css styles to customize the chat message bubbles.
+    */
+    bubble_styles: PropTypes.shape({
+        user: PropTypes.object,
+        assistant: PropTypes.object,
+    }),
 };
 
 ChatComponent.defaultProps = {
@@ -202,7 +224,23 @@ ChatComponent.defaultProps = {
     input_container_style: null,
     input_text_style: null,
     fill_height: true,
-    fill_width: true
+    fill_width: true,
+    bubble_styles: {
+        user: {
+            ...sharedBubbleStyle,
+            backgroundColor: "#007bff",
+            color: "white",
+            marginLeft: "auto",
+            textAlign: "right",
+        },
+        assistant: {
+            ...sharedBubbleStyle,
+            backgroundColor: "#f1f0f0",
+            color: "black",
+            marginRight: "auto",
+            textAlign: "left",
+        },
+    },
 };
 
 export default ChatComponent;
