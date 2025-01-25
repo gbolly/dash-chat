@@ -22,3 +22,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [0.1.0] - 2024-12-20
 
 First release!
+
+## [0.1.1] - 2025-01-**
+
+- Implement support for clickable link in chat text.
+- Support custom styling for chat bubbles.
