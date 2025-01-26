@@ -23,8 +23,7 @@ import TypingIndicatorDots from "../../private/DotsIndicator";
 import TypingIndicatorSpinner from "../../private/SpinnerIndicator";
 import { bubbleStyle as sharedBubbleStyle } from "../../styles/sharedStyles";
 
-import "../../styles/chatStyles1.css";
-import "../../styles/chatStyles2.css";
+import "../../styles/chatStyles.css";
 
 /**
  * ChatComponent - A React-based chat interface with customizable styles and typing indicators.
@@ -52,6 +51,7 @@ const ChatComponent = ({
     fill_height: fillHeight,
     fill_width: fillWidth,
     bubble_styles: bubbleStyles,
+    input_placeholder: inputPlaceholder,
 }) => {
     const linkifyOptions = {
         className: "link-message",
@@ -96,27 +96,43 @@ const ChatComponent = ({
         }
     };
 
-    const styleChatContainerSize = {};
+    const styleChatContainer = {};
+    const inputFieldStyle = {};
     if (fillHeight) {
-        styleChatContainerSize.height = "95vh";
+        styleChatContainer.height = "100%";
     } else {
-        styleChatContainerSize.height = "50vh";
+        styleChatContainer.height = "50%";
     }
     if (fillWidth) {
-        styleChatContainerSize.width = "100%";
+        styleChatContainer.width = "auto";
     } else {
-        styleChatContainerSize.width = "50%";
-        styleChatContainerSize.margin = "0 auto";
+        styleChatContainer.width = "50%";
+        styleChatContainer.margin = "0 auto";
+    }
+    if (theme === "dark") {
+        styleChatContainer.backgroundColor = "#161618";
+        styleChatContainer.borderColor = "#444444";
+        styleChatContainer.color = "#ffffff";
+        inputFieldStyle.borderColor = "#f1f0f0";
+        inputFieldStyle.color = "#000000";
+    } else {
+        styleChatContainer.backgroundColor = "#ffffff";
+        styleChatContainer.borderColor = "#e0e0e0";
+        styleChatContainer.color = "#e0e0e0";
+        inputFieldStyle.borderColor = "#e0e0e0"
     }
 
     return (
-        <div className="container">
-            <div
-                className={`chat-container ${theme === "dark" ? "default2" : "default1"}`}
-                style={{ ...containerStyle, ...styleChatContainerSize }}
-            >
-                <div className="chat-messages">
-                    {localMessages.map((message, index) => {
+        <div className={"chat-container"} style={{ ...styleChatContainer, ...containerStyle }}>
+            <div className="chat-messages">
+                {localMessages.length === 0 ? (
+                    <div className="empty-chat">No conversation yet.</div>
+                ) : (
+                    localMessages.map((message, index) => {
+                        if (!message || typeof message !== "object" || !message.role || !message.content) {
+                            console.warn(`Invalid message at index ${index}:`, message);
+                            return null;
+                        }
                         const bubbleStyle = message.role === "user" ? userBubbleStyle : assistantBubbleStyle;
                         return (
                             <div
@@ -127,24 +143,26 @@ const ChatComponent = ({
                                 <Linkify options={linkifyOptions}>{message.content}</Linkify>
                             </div>
                         )
-                    })}
-                    {showTyping && (
-                        <div className="typing-indicator user-typing" data-testid="typing-indicator">
-                            {typingIndicator === "dots" && <TypingIndicatorDots />}
-                            {typingIndicator === "spinner" && <TypingIndicatorSpinner />}
-                        </div>
-                    )}
-                    <div ref={messageEndRef} />
-                </div>
-                <div className="chat-input">
-                    <MessageInput
-                        onSend={handleSendMessage}
-                        handleInputChange={handleInputChange}
-                        value={currentMessage}
-                        customStyles={inputContainerStyle}
-                        inputComponentStyles={inputTextStyle}
-                    />
-                </div>
+                    })
+                )}
+                {showTyping && (
+                    <div className="typing-indicator user-typing" data-testid="typing-indicator">
+                        {typingIndicator === "dots" && <TypingIndicatorDots />}
+                        {typingIndicator === "spinner" && <TypingIndicatorSpinner />}
+                    </div>
+                )}
+                <div ref={messageEndRef} />
+            </div>
+            <div className="chat-input">
+                <MessageInput
+                    onSend={handleSendMessage}
+                    handleInputChange={handleInputChange}
+                    value={currentMessage}
+                    customStyles={inputContainerStyle}
+                    inputComponentStyles={{...inputFieldStyle, ...inputTextStyle}}
+                    placeholder={inputPlaceholder}
+                    showTyping={showTyping}
+                />
             </div>
         </div>
     );
@@ -164,7 +182,7 @@ ChatComponent.propTypes = {
     */
     messages: PropTypes.arrayOf(
         PropTypes.shape({
-            role: PropTypes.oneOf(["user", "assistant"]),
+            role: PropTypes.oneOf(["user", "assistant"]).isRequired,
             content: PropTypes.string.isRequired,
         })
     ),
@@ -213,6 +231,10 @@ ChatComponent.propTypes = {
         user: PropTypes.object,
         assistant: PropTypes.object,
     }),
+    /**
+     * Placeholder input to bne used in the input field
+    */
+    input_placeholder: PropTypes.string,
 };
 
 ChatComponent.defaultProps = {
@@ -241,6 +263,7 @@ ChatComponent.defaultProps = {
             textAlign: "left",
         },
     },
+    input_placeholder: ""
 };
 
 export default ChatComponent;
