@@ -64,3 +64,48 @@
 .empty-chat {
     margin: 0 auto;
 }
+
+.actionBtnContainer {
+    position: relative;
+}
+
+.dotsButton {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.dotsButton:hover {
+    background: #cccccc1f;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdownMenu {
+    position: absolute;
+    right: 0;
+    background-color: white;
+    width: 100px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.dropdownItem {
+    padding: 8px 12px;
+    background: none;
+    border: none;
+    text-align: left;
+    width: 100%;
+    cursor: pointer;
+}
+
+.dropdownItem:hover {
+    background-color: #f1f1f1;
+}
+

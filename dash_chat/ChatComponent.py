@@ -28,6 +28,9 @@ Keyword arguments:
 
     - assistant (dict; optional)
 
+- class_name (string; default ""):
+    Name for the class attribute to be added to the chat container.
+
 - container_style (dict; optional):
     Inline css styles to customize the chat container.
 
@@ -63,6 +66,12 @@ Keyword arguments:
 - new_message (dict; optional):
     Latest chat message that was appended to messages array.
 
+- persistence (boolean; default False):
+    Whether messages should be stored for persistence.
+
+- persistence_type (a value equal to: "localStorage", "sessionStorage"; default "localStorage"):
+    Where persisted messages will be stored.
+
 - theme (string; default "light"):
     Theme for the chat interface. Default is \"light\". Use \"dark\"
     for a dark mode appearance.
@@ -76,10 +85,10 @@ Keyword arguments:
     _namespace = 'dash_chat'
     _type = 'ChatComponent'
     @_explicitize_args
-    def __init__(self, id=Component.UNDEFINED, messages=Component.UNDEFINED, theme=Component.UNDEFINED, container_style=Component.UNDEFINED, typing_indicator=Component.UNDEFINED, new_message=Component.UNDEFINED, input_container_style=Component.UNDEFINED, input_text_style=Component.UNDEFINED, fill_height=Component.UNDEFINED, fill_width=Component.UNDEFINED, bubble_styles=Component.UNDEFINED, input_placeholder=Component.UNDEFINED, **kwargs):
-        self._prop_names = ['id', 'bubble_styles', 'container_style', 'fill_height', 'fill_width', 'input_container_style', 'input_placeholder', 'input_text_style', 'messages', 'new_message', 'theme', 'typing_indicator']
+    def __init__(self, id=Component.UNDEFINED, messages=Component.UNDEFINED, theme=Component.UNDEFINED, container_style=Component.UNDEFINED, typing_indicator=Component.UNDEFINED, new_message=Component.UNDEFINED, input_container_style=Component.UNDEFINED, input_text_style=Component.UNDEFINED, fill_height=Component.UNDEFINED, fill_width=Component.UNDEFINED, bubble_styles=Component.UNDEFINED, input_placeholder=Component.UNDEFINED, class_name=Component.UNDEFINED, persistence=Component.UNDEFINED, persistence_type=Component.UNDEFINED, **kwargs):
+        self._prop_names = ['id', 'bubble_styles', 'class_name', 'container_style', 'fill_height', 'fill_width', 'input_container_style', 'input_placeholder', 'input_text_style', 'messages', 'new_message', 'persistence', 'persistence_type', 'theme', 'typing_indicator']
         self._valid_wildcard_attributes =            []
-        self.available_properties = ['id', 'bubble_styles', 'container_style', 'fill_height', 'fill_width', 'input_container_style', 'input_placeholder', 'input_text_style', 'messages', 'new_message', 'theme', 'typing_indicator']
+        self.available_properties = ['id', 'bubble_styles', 'class_name', 'container_style', 'fill_height', 'fill_width', 'input_container_style', 'input_placeholder', 'input_text_style', 'messages', 'new_message', 'persistence', 'persistence_type', 'theme', 'typing_indicator']
         self.available_wildcard_properties =            []
         _explicit_args = kwargs.pop('_explicit_args')
         _locals = locals()

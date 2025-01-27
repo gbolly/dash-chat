@@ -133,6 +133,10 @@ if __name__ == "__main__":
 | **theme**                     | `string`                  | `"light"`                      | Theme for the chat interface. Options: `"light"` or `"dark"`.                                 |
 | **typing_indicator**          | `string`                  | `"dots"`                       | Type of typing indicator. Options: `"dots"` (animated dots) or `"spinner"` (spinner).         |
 | **bubble_styles**             | `dict`                    | `{user: {backgroundColor: "#007bff", "color": "white", "marginLeft": "auto", "textAlign": "right",}, assistant: {backgroundColor: "#f1f0f0", "color": "black", "marginRight": "auto", "textAlign": "left",}}`                             | Inline css styles to customize the chat message bubbles for both user and assistant.          |
+| **input_placeholder**         | `string`                  | `None`                         | Placeholder text to be used in the input box.                                                 |
+| **class_name**                | `string`                  | `None`                         | Name to use as class attribute on the main chat container.                                    |
+| **persistence**               | `boolean`                 | `False`                        | Whether to store chat messages so that it can be persisted.                                   |
+| **persistence_type**          | `string`                  | `"localStorage"`               | Where chat messages will be stored for persistence. Options: `"localStorage"` or `"sessionStorage"` |
 
 ## License
 

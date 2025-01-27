@@ -41,6 +41,7 @@ const ChatComponent = ({
      * it's expected to be named in the camelCase format.
      * https://dash.plotly.com/react-for-python-developers
     */
+    id,
     messages: propMessages,
     theme,
     container_style: containerStyle,
@@ -52,6 +53,9 @@ const ChatComponent = ({
     fill_width: fillWidth,
     bubble_styles: bubbleStyles,
     input_placeholder: inputPlaceholder,
+    class_name: className,
+    persistence,
+    persistence_type: persistenceType
 }) => {
     const linkifyOptions = {
         className: "link-message",
@@ -60,16 +64,36 @@ const ChatComponent = ({
     const { user: userBubbleStyle, assistant: assistantBubbleStyle } = bubbleStyles || {};
     const [currentMessage, setCurrentMessage] = useState("");
     const [localMessages, setLocalMessages] = useState(propMessages || []);
-    const messageEndRef = useRef(null);
     const [showTyping, setShowTyping] = useState(false);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const messageEndRef = useRef(null);
+    const dropdownRef = useRef(null);
 
     useEffect(() => {
-        const lastMsg = propMessages.slice(-1).pop();
-
-        if (lastMsg?.role === "assistant" && showTyping) {
-            setShowTyping(false);
+        if (persistence) {
+            const savedMessages = JSON.parse(window[persistenceType].getItem(id)) || [];
+            if (savedMessages.length > 0) {
+                setLocalMessages(savedMessages);
+            }
         }
-        setLocalMessages(propMessages || []);
+    }, [id, persistence, persistenceType]);
+    
+    useEffect(() => {
+        if (persistence) {
+            window[persistenceType].setItem(id, JSON.stringify(localMessages));
+        }
+    }, [localMessages, id, persistence, persistenceType]);
+
+    useEffect(() => {
+        if (propMessages) {
+            const lastMsg = propMessages.slice(-1).pop();
+            if (lastMsg?.role === "assistant" && showTyping) {
+                setShowTyping(false);
+            }
+            setLocalMessages((prevMessages) => {
+                return [...prevMessages, lastMsg]
+            });
+        }
     }, [propMessages]);
 
     useEffect(() => {
@@ -78,6 +102,20 @@ const ChatComponent = ({
         }
     }, [localMessages]);
 
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setDropdownOpen(false);
+            }
+        };
+    
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+    
+
     const handleInputChange = (e) => {
         setCurrentMessage(e.target.value);
     };
@@ -85,7 +123,13 @@ const ChatComponent = ({
     const handleSendMessage = () => {
         if (currentMessage.trim()) {
             const newMessage = { role: "user", content: currentMessage };
-            setLocalMessages((prevMessages) => [...prevMessages, newMessage]);
+            setLocalMessages((prevMessages) => {
+                const updatedMessages = [...prevMessages, newMessage];
+                if (persistence) {
+                    window[persistenceType].setItem(id, JSON.stringify(updatedMessages));
+                }
+                return updatedMessages;
+            });
 
             if (setProps) {
                 setProps({ new_message: newMessage });
@@ -93,6 +137,13 @@ const ChatComponent = ({
 
             setShowTyping(true);
             setCurrentMessage("");
+        }
+    };
+
+    const handleClearChat = () => {
+        setLocalMessages([]);
+        if (persistence) {
+            window[persistenceType].removeItem(id);
         }
     };
 
@@ -123,7 +174,23 @@ const ChatComponent = ({
     }
 
     return (
-        <div className={"chat-container"} style={{ ...styleChatContainer, ...containerStyle }}>
+        <div className={`chat-container ${className}`} style={{ ...styleChatContainer, ...containerStyle }}>
+            {persistence && (
+                <div className="actionBtnContainer" ref={dropdownRef}>
+                    <div className="dropdown">
+                        <button className="dotsButton" onClick={() => setDropdownOpen(!dropdownOpen)}>
+                            &#x22EE;
+                        </button>
+                        {dropdownOpen && (
+                            <div className="dropdownMenu">
+                                <button onClick={handleClearChat} className="dropdownItem">
+                                    Clear chat
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
             <div className="chat-messages">
                 {localMessages.length === 0 ? (
                     <div className="empty-chat">No conversation yet.</div>
@@ -235,6 +302,18 @@ ChatComponent.propTypes = {
      * Placeholder input to bne used in the input field
     */
     input_placeholder: PropTypes.string,
+    /**
+     * Name for the class attribute to be added to the chat container
+    */
+    class_name: PropTypes.string,
+    /**
+     * Whether messages should be stored for persistence
+    */
+    persistence: PropTypes.bool,
+    /**
+     * Where persisted messages will be stored
+    */
+    persistence_type: PropTypes.oneOf(["localStorage", "sessionStorage"]),
 };
 
 ChatComponent.defaultProps = {
@@ -263,7 +342,10 @@ ChatComponent.defaultProps = {
             textAlign: "left",
         },
     },
-    input_placeholder: ""
+    input_placeholder: "",
+    class_name: "",
+    persistence: false,
+    persistence_type: "localStorage",
 };
 
 export default ChatComponent;
