@@ -56,9 +56,28 @@
     background-color: #efefef4d;
 }
 
-.link-message {
+.chat-bubble {
+    max-width: 75%;
+    margin-bottom: 10px;
+    padding: 10px 10px 0px;
+    border-radius: 12px;
+    word-wrap: break-word;
+}
+
+.user .markdown-content a {
     color: #fff;
     text-decoration: underline;
+}
+
+.user .markdown-content a:hover {
+    color: #212427;
+}
+
+.markdown-content code {
+    background-color: rgba(0, 0, 0, 0.4);
+    color: #ffffffda;
+    padding: 2px 4px;
+    border-radius: 4px;
 }
 
 .empty-chat {

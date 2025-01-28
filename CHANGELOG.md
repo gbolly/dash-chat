@@ -25,5 +25,10 @@ First release!
 
 ## [0.1.1] - 2025-01-**
 
-- Implement support for clickable link in chat text.
+- Support text markdown formats.
 - Support custom styling for chat bubbles.
+- Added support for chat message persistence.
+- Fix issue with rigid width of chat container and remove container class.
+- Support passing of class attribute to the component.
+- Change default styling on bubble to have width controlled by text.
+- Handle error when `messages` is undefined.

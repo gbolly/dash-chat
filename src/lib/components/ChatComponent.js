@@ -15,13 +15,13 @@
 */
 
 import React, { useEffect, useRef, useState } from "react";
-import Linkify from "linkify-react";
+import Markdown from "react-markdown";
 import PropTypes from "prop-types";
+import remarkGfm from "remark-gfm";
 
 import MessageInput from "../../private/ChatMessageInput";
 import TypingIndicatorDots from "../../private/DotsIndicator";
 import TypingIndicatorSpinner from "../../private/SpinnerIndicator";
-import { bubbleStyle as sharedBubbleStyle } from "../../styles/sharedStyles";
 
 import "../../styles/chatStyles.css";
 
@@ -57,10 +57,6 @@ const ChatComponent = ({
     persistence,
     persistence_type: persistenceType
 }) => {
-    const linkifyOptions = {
-        className: "link-message",
-        target: "_blank",
-    };
     const { user: userBubbleStyle, assistant: assistantBubbleStyle } = bubbleStyles || {};
     const [currentMessage, setCurrentMessage] = useState("");
     const [localMessages, setLocalMessages] = useState(propMessages || []);
@@ -80,12 +76,14 @@ const ChatComponent = ({
     
     useEffect(() => {
         if (persistence) {
-            window[persistenceType].setItem(id, JSON.stringify(localMessages));
+            if (localMessages.length > 0) {
+                window[persistenceType].setItem(id, JSON.stringify(localMessages));
+            }
         }
     }, [localMessages, id, persistence, persistenceType]);
 
     useEffect(() => {
-        if (propMessages) {
+        if (propMessages.length > 0) {
             const lastMsg = propMessages.slice(-1).pop();
             if (lastMsg?.role === "assistant" && showTyping) {
                 setShowTyping(false);
@@ -145,6 +143,7 @@ const ChatComponent = ({
         if (persistence) {
             window[persistenceType].removeItem(id);
         }
+        setDropdownOpen(false);
     };
 
     const styleChatContainer = {};
@@ -158,7 +157,6 @@ const ChatComponent = ({
         styleChatContainer.width = "auto";
     } else {
         styleChatContainer.width = "50%";
-        styleChatContainer.margin = "0 auto";
     }
     if (theme === "dark") {
         styleChatContainer.backgroundColor = "#161618";
@@ -197,7 +195,6 @@ const ChatComponent = ({
                 ) : (
                     localMessages.map((message, index) => {
                         if (!message || typeof message !== "object" || !message.role || !message.content) {
-                            console.warn(`Invalid message at index ${index}:`, message);
                             return null;
                         }
                         const bubbleStyle = message.role === "user" ? userBubbleStyle : assistantBubbleStyle;
@@ -207,7 +204,20 @@ const ChatComponent = ({
                                 className={`chat-bubble ${message.role}`}
                                 style={bubbleStyle}
                             >
-                                <Linkify options={linkifyOptions}>{message.content}</Linkify>
+                                <div className="markdown-content">
+                                    <Markdown
+                                        remarkPlugins={[remarkGfm]}
+                                        components={{
+                                            a: ({ href, children }) => (
+                                                <a href={href} target="_blank" rel="noopener noreferrer">
+                                                    {children}
+                                                </a>
+                                            ),
+                                        }}
+                                    >
+                                        {message.content}
+                                    </Markdown>
+                                </div>
                             </div>
                         )
                     })
@@ -317,6 +327,7 @@ ChatComponent.propTypes = {
 };
 
 ChatComponent.defaultProps = {
+    messages: [],
     setProps: () => {},
     theme: "light",
     container_style: null,
@@ -328,14 +339,12 @@ ChatComponent.defaultProps = {
     fill_width: true,
     bubble_styles: {
         user: {
-            ...sharedBubbleStyle,
             backgroundColor: "#007bff",
             color: "white",
             marginLeft: "auto",
             textAlign: "right",
         },
         assistant: {
-            ...sharedBubbleStyle,
             backgroundColor: "#f1f0f0",
             color: "black",
             marginRight: "auto",
