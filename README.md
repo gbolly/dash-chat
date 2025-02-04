@@ -4,7 +4,7 @@
 [![Supported Python versions](https://img.shields.io/pypi/pyversions/dash-chat.svg)](https://pypi.org/project/dash-chat/)
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/gbolly/dash-chat/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/gbolly/dash-chat/tree/main)
 
-dash-chat is a Dash component library chat interface. It provides a customizable and responsive chat UI with support for typing indicators, themes, and state management.
+dash-chat is a Dash component library chat interface. It provides a customizable and responsive chat UI with support for markdown, chat persistence, typing indicators, themes, and state management.
 
 ## Installation
 ```
@@ -12,7 +12,7 @@ $ pip install dash-chat
 ```
 
 ## Basic Usage
-The simplest way to use the `dash_chat.ChatComponent` is to provide the `messages` prop. This is a list of messages that initialize the chat UI. Each message is an OpenAI-style dictionary that must have the following key-value pairs:
+The simplest way to use the `dash_chat.ChatComponent` is to initialize the `messages` prop as an empty list. This is a list of messages that initialize the chat UI. Each message is an OpenAI-style dictionary that must have the following key-value pairs:
 - `role`: The message sender, either `"user"` or `"assistant"`.
 - `content`: The content of the message.
 
@@ -115,6 +115,24 @@ def handle_chat(new_message, messages):
 
 if __name__ == "__main__":
     app.run_server(debug=True)
+```
+
+### **Persistence Functionality**
+The ChatComponent supports persistence, allowing messages to be stored and retrieved across page reloads. When persistence=True, messages are saved in the specified storage (localStorage or sessionStorage).
+
+#### **How It Works**
+On initialization, the component checks for stored messages.
+If stored messages exist, they are loaded; otherwise, an empty message list is used.
+New messages are automatically saved to storage.
+When the page is refreshed, stored messages are restored to maintain chat history.
+To enable persistence, set:
+
+```python
+ChatComponent(
+    id="chat-component",
+    persistence=True,
+    persistence_type="localStorage"  # or "sessionStorage"
+)
 ```
 
 ### **Props**

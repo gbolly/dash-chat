@@ -24,11 +24,11 @@ const MessageInput = ({
     onSend,
     handleInputChange,
     value,
-    placeholder,
-    buttonLabel,
-    customStyles,
-    inputComponentStyles,
-    showTyping,
+    placeholder = "Start typing...",
+    buttonLabel = "Send",
+    customStyles = null,
+    inputComponentStyles = null,
+    showTyping = false,
 }) => {
     return (
         <div className="message-input-container" style={customStyles}>
@@ -90,14 +90,6 @@ MessageInput.propTypes = {
      * Disable button when waiting for message.
     */
     showTyping: PropTypes.bool,
-};
-
-MessageInput.defaultProps = {
-    placeholder: "Start typing...",
-    buttonLabel: "Send",
-    customStyles: null,
-    inputComponentStyles: null,
-    showTyping: false,
 };
 
 export default MessageInput;

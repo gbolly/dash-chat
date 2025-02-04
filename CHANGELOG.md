@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 First release!
 
-## [0.1.1] - 2025-01-**
+## [0.1.1] - 2025-01-05
 
 - Support text markdown formats.
 - Support custom styling for chat bubbles.
@@ -31,4 +31,3 @@ First release!
 - Fix issue with rigid width of chat container and remove container class.
 - Support passing of class attribute to the component.
 - Change default styling on bubble to have width controlled by text.
-- Handle error when `messages` is undefined.

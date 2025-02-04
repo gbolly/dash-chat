@@ -11,10 +11,7 @@ describe("ChatComponent", () => {
 
     const defaultProps = {
         id: "chat",
-        messages: [
-            { role: "assistant", content: "Hello! How can I assist you today?" },
-            { role: "user", content: "I need help with my account." },
-        ],
+        messages: [],
         theme: "light",
         typing_indicator: "dots",
         setProps: mockSetProps,
@@ -22,16 +19,39 @@ describe("ChatComponent", () => {
         fill_width: true,
     };
 
-    it("renders chat messages correctly", () => {
+    test("displays 'No conversation yet' when there are no messages", () => {
         render(<ChatComponent {...defaultProps} />);
+        expect(screen.getByText("No conversation yet.")).toBeInTheDocument();
+    });
+
+    it("renders chat messages correctly", () => {
+        render(
+            <ChatComponent
+                {...defaultProps}
+                messages={[
+                    { role: "assistant", content: "Hello! How can I assist you today?" },
+                    { role: "user", content: "I need help with my account." },
+                ]}
+            />
+        );
         expect(screen.getByText("Hello! How can I assist you today?")).toBeInTheDocument();
         expect(screen.getByText("I need help with my account.")).toBeInTheDocument();
     });
 
-    it("applies the correct theme class", () => {
+    it("applies the light theme", () => {
+        const { container } = render(<ChatComponent {...defaultProps} />);
+        const chatContainer = container.querySelector(".chat-container");
+        expect(chatContainer).toHaveStyle("color: #e0e0e0");
+        expect(chatContainer).toHaveStyle("border-color: #e0e0e0");
+        expect(chatContainer).toHaveStyle("background-color: #ffffff");
+    });
+
+    it("applies the dark theme", () => {
         const { container } = render(<ChatComponent {...defaultProps} theme="dark" />);
-        const divs = container.querySelectorAll("div");
-        expect(divs[1]).toHaveClass("default2");
+        const chatContainer = container.querySelector(".chat-container");
+        expect(chatContainer).toHaveStyle("color: #ffffff");
+        expect(chatContainer).toHaveStyle("border-color: #444444");
+        expect(chatContainer).toHaveStyle("background-color: #161618");
     });
 
     it("hides typing indicators after assistant response", async () => {
@@ -86,33 +106,68 @@ describe("ChatComponent", () => {
         const { container } = render(<ChatComponent {...defaultProps} fill_height={true} fill_width={true} />);
 
         const chatContainer = container.querySelector(".chat-container");
-        expect(chatContainer).toHaveStyle("height: 95vh");
-        expect(chatContainer).toHaveStyle("width: 100%");
+        expect(chatContainer).toHaveStyle("height: 100%");
+        expect(chatContainer).toHaveStyle("width: auto");
     });
 
     it("applies correct height and width when fillHeight is true and fillWidth is false", () => {
         const { container } = render(<ChatComponent {...defaultProps} fill_height={true} fill_width={false} />);
 
         const chatContainer = container.querySelector(".chat-container");
-        expect(chatContainer).toHaveStyle("height: 95vh");
+        expect(chatContainer).toHaveStyle("height: 100%");
         expect(chatContainer).toHaveStyle("width: 50%");
-        expect(chatContainer).toHaveStyle("margin: 0 auto");
     });
 
     it("applies correct height and width when fillHeight is false and fillWidth is true", () => {
         const { container } = render(<ChatComponent {...defaultProps} fill_height={false} fill_width={true} />);
 
         const chatContainer = container.querySelector(".chat-container");
-        expect(chatContainer).toHaveStyle("height: 50vh");
-        expect(chatContainer).toHaveStyle("width: 100%");
+        expect(chatContainer).toHaveStyle("height: 50%");
+        expect(chatContainer).toHaveStyle("width: auto");
     });
 
     it("applies correct height and width when fillHeight and fillWidth are false", () => {
         const { container } = render(<ChatComponent {...defaultProps} fill_height={false} fill_width={false} />);
 
         const chatContainer = container.querySelector(".chat-container");
-        expect(chatContainer).toHaveStyle("height: 50vh");
+        expect(chatContainer).toHaveStyle("height: 50%");
         expect(chatContainer).toHaveStyle("width: 50%");
-        expect(chatContainer).toHaveStyle("margin: 0 auto");
+    });
+
+    it("saves messages to localStorage when persistence is enabled", () => {
+        const id = "chat-component";
+        const messages = [{ role: "user", content: "Hello!" }];
+        render(<ChatComponent id={id} persistence={true} persistence_type="localStorage" />);
+        const inputField = screen.getByRole("textbox");
+        const sendButton = screen.getByRole("button", { name: /send/i });
+
+        fireEvent.change(inputField, { target: { value: "Hello!" } });
+        fireEvent.click(sendButton);
+        expect(JSON.parse(localStorage.getItem(id))).toEqual(messages);
+    });
+
+    it("persist messages after refresh", () => {
+        const id = "chat-component";
+        const storedMessages = [{ role: "assistant", content: "Welcome back!" }];
+        localStorage.setItem(id, JSON.stringify(storedMessages));
+        render(<ChatComponent id={id} persistence={true} persistence_type="localStorage" />);
+        expect(screen.getByText("Welcome back!")).toBeInTheDocument();
+    });
+
+    it("removes messages from UI and storage on clear chat", () => {
+        const id = "chat-component";
+        const storedMessages = [{ role: "user", content: "Old message" }];
+        localStorage.setItem(id, JSON.stringify(storedMessages));
+        render(<ChatComponent id={id} persistence={true} persistence_type="localStorage" />);
+
+        const DropdownBtn = screen.getByRole("button", { name: "clear" });
+        fireEvent.click(DropdownBtn);
+
+        const clearBtn = screen.getByRole("button", { name: /clear chat/i });
+        expect(screen.getByText("Old message")).toBeInTheDocument();
+        fireEvent.click(clearBtn);
+
+        expect(screen.queryByText("Old message")).not.toBeInTheDocument();
+        expect(localStorage.getItem(id)).toBeNull();
     });
 });

@@ -7,7 +7,7 @@ import "../styles/indicatorStyle.css"
  * A resuable dots typing indicator
 */
 
-const TypingIndicatorDots = ({ color }) => {
+const TypingIndicatorDots = ({ color = "gray" }) => {
     return (
         <div className="typing-dots" style={{ color }}>
             <span></span>
@@ -22,10 +22,6 @@ TypingIndicatorDots.propTypes = {
      * Color of the dots
     */
     color: PropTypes.string,
-};
-
-TypingIndicatorDots.defaultProps = {
-    color: "gray",
 };
 
 export default TypingIndicatorDots;

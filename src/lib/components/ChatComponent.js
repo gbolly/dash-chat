@@ -42,57 +42,78 @@ const ChatComponent = ({
      * https://dash.plotly.com/react-for-python-developers
     */
     id,
-    messages: propMessages,
-    theme,
-    container_style: containerStyle,
-    typing_indicator: typingIndicator,
-    input_container_style: inputContainerStyle,
-    input_text_style: inputTextStyle,
-    setProps,
-    fill_height: fillHeight,
-    fill_width: fillWidth,
-    bubble_styles: bubbleStyles,
-    input_placeholder: inputPlaceholder,
-    class_name: className,
-    persistence,
-    persistence_type: persistenceType
+    messages = [],
+    theme = "light",
+    container_style: containerStyle = null,
+    typing_indicator: typingIndicator = "dots",
+    input_container_style: inputContainerStyle = null,
+    input_text_style: inputTextStyle = null,
+    setProps = () => { },
+    fill_height: fillHeight = true,
+    fill_width: fillWidth = true,
+    bubble_styles: bubbleStyles = {
+        user: {
+            backgroundColor: "#007bff",
+            color: "white",
+            marginLeft: "auto",
+            textAlign: "right",
+        },
+        assistant: {
+            backgroundColor: "#f1f0f0",
+            color: "black",
+            marginRight: "auto",
+            textAlign: "left",
+        },
+    },
+    input_placeholder: inputPlaceholder = "",
+    class_name: className = "",
+    persistence = false,
+    persistence_type: persistenceType = "localStorage",
 }) => {
     const { user: userBubbleStyle, assistant: assistantBubbleStyle } = bubbleStyles || {};
     const [currentMessage, setCurrentMessage] = useState("");
-    const [localMessages, setLocalMessages] = useState(propMessages || []);
+    const [localMessages, setLocalMessages] = useState([]);
     const [showTyping, setShowTyping] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const messageEndRef = useRef(null);
     const dropdownRef = useRef(null);
 
+    // load messages from storage or initialize from messages
     useEffect(() => {
         if (persistence) {
             const savedMessages = JSON.parse(window[persistenceType].getItem(id)) || [];
+            const initialized = JSON.parse(window[persistenceType].getItem(`${id}-initialized`));
             if (savedMessages.length > 0) {
                 setLocalMessages(savedMessages);
+            } else if (!initialized && messages.length > 0) {
+                setLocalMessages(messages);
+                window[persistenceType].setItem(id, JSON.stringify(messages));
+                window[persistenceType].setItem(`${id}-initialized`, "true");
             }
+        } else {
+            setLocalMessages(messages);
         }
     }, [id, persistence, persistenceType]);
-    
+
+    // persist messages whenever localMessages updates
     useEffect(() => {
-        if (persistence) {
-            if (localMessages.length > 0) {
-                window[persistenceType].setItem(id, JSON.stringify(localMessages));
-            }
+        if (persistence && localMessages.length > 0) {
+            window[persistenceType].setItem(id, JSON.stringify(localMessages));
         }
     }, [localMessages, id, persistence, persistenceType]);
 
+    // hide typing indicator & update local messages with new ones
     useEffect(() => {
-        if (propMessages.length > 0) {
-            const lastMsg = propMessages.slice(-1).pop();
+        if (messages.length > 0) {
+            const lastMsg = messages.slice(-1).pop();
             if (lastMsg?.role === "assistant" && showTyping) {
                 setShowTyping(false);
+                setLocalMessages((prevMessages) => [...prevMessages, lastMsg]);
+            } else {
+                setLocalMessages(messages || []);
             }
-            setLocalMessages((prevMessages) => {
-                return [...prevMessages, lastMsg]
-            });
         }
-    }, [propMessages]);
+    }, [messages]);
 
     useEffect(() => {
         if (messageEndRef.current) {
@@ -106,13 +127,13 @@ const ChatComponent = ({
                 setDropdownOpen(false);
             }
         };
-    
+
         document.addEventListener("mousedown", handleClickOutside);
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
-    
+
 
     const handleInputChange = (e) => {
         setCurrentMessage(e.target.value);
@@ -176,7 +197,7 @@ const ChatComponent = ({
             {persistence && (
                 <div className="actionBtnContainer" ref={dropdownRef}>
                     <div className="dropdown">
-                        <button className="dotsButton" onClick={() => setDropdownOpen(!dropdownOpen)}>
+                        <button className="dotsButton" onClick={() => setDropdownOpen(!dropdownOpen)} aria-label="clear">
                             &#x22EE;
                         </button>
                         {dropdownOpen && (
@@ -236,7 +257,7 @@ const ChatComponent = ({
                     handleInputChange={handleInputChange}
                     value={currentMessage}
                     customStyles={inputContainerStyle}
-                    inputComponentStyles={{...inputFieldStyle, ...inputTextStyle}}
+                    inputComponentStyles={{ ...inputFieldStyle, ...inputTextStyle }}
                     placeholder={inputPlaceholder}
                     showTyping={showTyping}
                 />
@@ -324,37 +345,6 @@ ChatComponent.propTypes = {
      * Where persisted messages will be stored
     */
     persistence_type: PropTypes.oneOf(["localStorage", "sessionStorage"]),
-};
-
-ChatComponent.defaultProps = {
-    messages: [],
-    setProps: () => {},
-    theme: "light",
-    container_style: null,
-    typing_indicator: "dots",
-    new_message: null,
-    input_container_style: null,
-    input_text_style: null,
-    fill_height: true,
-    fill_width: true,
-    bubble_styles: {
-        user: {
-            backgroundColor: "#007bff",
-            color: "white",
-            marginLeft: "auto",
-            textAlign: "right",
-        },
-        assistant: {
-            backgroundColor: "#f1f0f0",
-            color: "black",
-            marginRight: "auto",
-            textAlign: "left",
-        },
-    },
-    input_placeholder: "",
-    class_name: "",
-    persistence: false,
-    persistence_type: "localStorage",
 };
 
 export default ChatComponent;
