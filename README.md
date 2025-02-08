@@ -39,9 +39,7 @@ app = dash.Dash(__name__)
 app.layout = html.Div([
     ChatComponent(
         id="chat-component",
-        messages=[
-            {"role": "assistant", "content": "Hello!"},
-        ],
+        messages=[],
     )
 ])
 
@@ -88,9 +86,7 @@ app = dash.Dash(__name__)
 app.layout = html.Div([
     ChatComponent(
         id="chat-component",
-        messages=[
-            {"role": "assistant", "content": "Hello!"},
-        ],
+        messages=[],
     )
 ])
 
@@ -131,7 +127,7 @@ To enable persistence, set:
 ChatComponent(
     id="chat-component",
     persistence=True,
-    persistence_type="localStorage"  # or "sessionStorage"
+    persistence_type="local"  # or "session"
 )
 ```
 
@@ -150,11 +146,12 @@ ChatComponent(
 | **messages**                  | `list of dicts`           | `None`                         | List of chat messages. Each message object must include: `role` and `content`. Initialize as an empty list if no on first load.                  |
 | **theme**                     | `string`                  | `"light"`                      | Theme for the chat interface. Options: `"light"` or `"dark"`.                                 |
 | **typing_indicator**          | `string`                  | `"dots"`                       | Type of typing indicator. Options: `"dots"` (animated dots) or `"spinner"` (spinner).         |
-| **bubble_styles**             | `dict`                    | `{user: {backgroundColor: "#007bff", "color": "white", "marginLeft": "auto", "textAlign": "right",}, assistant: {backgroundColor: "#f1f0f0", "color": "black", "marginRight": "auto", "textAlign": "left",}}`                             | Inline css styles to customize the chat message bubbles for both user and assistant.          |
+| **user_bubble_style**         | `dict`                    | `{"backgroundColor": "#007bff", "color": "white", "marginLeft": "auto", "textAlign": "right"}`                                   | Inline css styles to customize the message bubble for user.            |
+| **assistant_bubble_style**    | `dict`                    | `{"backgroundColor": "#f1f0f0", "color": "black", "marginRight": "auto", "textAlign": "left"}`                                   | Inline css styles to customize the message bubble for assistant.       |
 | **input_placeholder**         | `string`                  | `None`                         | Placeholder text to be used in the input box.                                                 |
 | **class_name**                | `string`                  | `None`                         | Name to use as class attribute on the main chat container.                                    |
 | **persistence**               | `boolean`                 | `False`                        | Whether to store chat messages so that it can be persisted.                                   |
-| **persistence_type**          | `string`                  | `"localStorage"`               | Where chat messages will be stored for persistence. Options: `"localStorage"` or `"sessionStorage"` |
+| **persistence_type**          | `string`                  | `"local"`                      | Where chat messages will be stored for persistence. Options: `"local"` or `"session"`         |
 
 ## License
 

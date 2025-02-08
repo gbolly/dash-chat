@@ -137,7 +137,7 @@ describe("ChatComponent", () => {
     it("saves messages to localStorage when persistence is enabled", () => {
         const id = "chat-component";
         const messages = [{ role: "user", content: "Hello!" }];
-        render(<ChatComponent id={id} persistence={true} persistence_type="localStorage" />);
+        render(<ChatComponent id={id} persistence={true} persistence_type="local" />);
         const inputField = screen.getByRole("textbox");
         const sendButton = screen.getByRole("button", { name: /send/i });
 
@@ -150,7 +150,7 @@ describe("ChatComponent", () => {
         const id = "chat-component";
         const storedMessages = [{ role: "assistant", content: "Welcome back!" }];
         localStorage.setItem(id, JSON.stringify(storedMessages));
-        render(<ChatComponent id={id} persistence={true} persistence_type="localStorage" />);
+        render(<ChatComponent id={id} persistence={true} persistence_type="local" />);
         expect(screen.getByText("Welcome back!")).toBeInTheDocument();
     });
 
@@ -158,7 +158,7 @@ describe("ChatComponent", () => {
         const id = "chat-component";
         const storedMessages = [{ role: "user", content: "Old message" }];
         localStorage.setItem(id, JSON.stringify(storedMessages));
-        render(<ChatComponent id={id} persistence={true} persistence_type="localStorage" />);
+        render(<ChatComponent id={id} persistence={true} persistence_type="local" />);
 
         const DropdownBtn = screen.getByRole("button", { name: "clear" });
         fireEvent.click(DropdownBtn);

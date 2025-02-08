@@ -25,6 +25,20 @@ import TypingIndicatorSpinner from "../../private/SpinnerIndicator";
 
 import "../../styles/chatStyles.css";
 
+const defaultUserBubbleStyle = {
+    backgroundColor: "#007bff",
+    color: "white",
+    marginLeft: "auto",
+    textAlign: "right",
+};
+
+const defaultAssistantBubbleStyle = {
+    backgroundColor: "#f1f0f0",
+    color: "black",
+    marginRight: "auto",
+    textAlign: "left",
+};
+
 /**
  * ChatComponent - A React-based chat interface with customizable styles and typing indicators.
  * * This component provides a chat interface with support for:
@@ -51,26 +65,15 @@ const ChatComponent = ({
     setProps = () => { },
     fill_height: fillHeight = true,
     fill_width: fillWidth = true,
-    bubble_styles: bubbleStyles = {
-        user: {
-            backgroundColor: "#007bff",
-            color: "white",
-            marginLeft: "auto",
-            textAlign: "right",
-        },
-        assistant: {
-            backgroundColor: "#f1f0f0",
-            color: "black",
-            marginRight: "auto",
-            textAlign: "left",
-        },
-    },
+    user_bubble_style: userBubbleStyleProp = {},
+    assistant_bubble_style: assistantBubbleStyleProp = {},
     input_placeholder: inputPlaceholder = "",
     class_name: className = "",
     persistence = false,
-    persistence_type: persistenceType = "localStorage",
+    persistence_type: persistenceType = "local",
 }) => {
-    const { user: userBubbleStyle, assistant: assistantBubbleStyle } = bubbleStyles || {};
+    const userBubbleStyle = { ...defaultUserBubbleStyle, ...userBubbleStyleProp };
+    const assistantBubbleStyle = { ...defaultAssistantBubbleStyle, ...assistantBubbleStyleProp };
     const [currentMessage, setCurrentMessage] = useState("");
     const [localMessages, setLocalMessages] = useState([]);
     const [showTyping, setShowTyping] = useState(false);
@@ -78,29 +81,36 @@ const ChatComponent = ({
     const messageEndRef = useRef(null);
     const dropdownRef = useRef(null);
 
+    let storeType;
+    if (persistenceType === "local") {
+        storeType = "localStorage";
+    } else if (persistenceType === "local") {
+        storeType = "sessionStorage";
+    }
+
     // load messages from storage or initialize from messages
     useEffect(() => {
         if (persistence) {
-            const savedMessages = JSON.parse(window[persistenceType].getItem(id)) || [];
-            const initialized = JSON.parse(window[persistenceType].getItem(`${id}-initialized`));
+            const savedMessages = JSON.parse(window[storeType].getItem(id)) || [];
+            const initialized = JSON.parse(window[storeType].getItem(`${id}-initialized`));
             if (savedMessages.length > 0) {
                 setLocalMessages(savedMessages);
             } else if (!initialized && messages.length > 0) {
                 setLocalMessages(messages);
-                window[persistenceType].setItem(id, JSON.stringify(messages));
-                window[persistenceType].setItem(`${id}-initialized`, "true");
+                window[storeType].setItem(id, JSON.stringify(messages));
+                window[storeType].setItem(`${id}-initialized`, "true");
             }
         } else {
             setLocalMessages(messages);
         }
-    }, [id, persistence, persistenceType]);
+    }, [id, persistence, storeType]);
 
     // persist messages whenever localMessages updates
     useEffect(() => {
         if (persistence && localMessages.length > 0) {
-            window[persistenceType].setItem(id, JSON.stringify(localMessages));
+            window[storeType].setItem(id, JSON.stringify(localMessages));
         }
-    }, [localMessages, id, persistence, persistenceType]);
+    }, [localMessages, id, persistence, storeType]);
 
     // hide typing indicator & update local messages with new ones
     useEffect(() => {
@@ -145,7 +155,7 @@ const ChatComponent = ({
             setLocalMessages((prevMessages) => {
                 const updatedMessages = [...prevMessages, newMessage];
                 if (persistence) {
-                    window[persistenceType].setItem(id, JSON.stringify(updatedMessages));
+                    window[storeType].setItem(id, JSON.stringify(updatedMessages));
                 }
                 return updatedMessages;
             });
@@ -162,7 +172,7 @@ const ChatComponent = ({
     const handleClearChat = () => {
         setLocalMessages([]);
         if (persistence) {
-            window[persistenceType].removeItem(id);
+            window[storeType].removeItem(id);
         }
         setDropdownOpen(false);
     };
@@ -323,12 +333,13 @@ ChatComponent.propTypes = {
     */
     fill_width: PropTypes.bool,
     /**
-     * Css styles to customize the chat message bubbles.
+     * Css styles to customize the user message bubble.
     */
-    bubble_styles: PropTypes.shape({
-        user: PropTypes.object,
-        assistant: PropTypes.object,
-    }),
+    user_bubble_style: PropTypes.object,
+    /**
+     * Css styles to customize the assistant message bubble.
+    */
+    assistant_bubble_style: PropTypes.object,
     /**
      * Placeholder input to bne used in the input field
     */
@@ -344,7 +355,7 @@ ChatComponent.propTypes = {
     /**
      * Where persisted messages will be stored
     */
-    persistence_type: PropTypes.oneOf(["localStorage", "sessionStorage"]),
+    persistence_type: PropTypes.oneOf(["local", "session"]),
 };
 
 export default ChatComponent;

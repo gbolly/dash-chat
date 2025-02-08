@@ -19,14 +19,8 @@ class ChatComponent(Component):
         callbacks. The ID needs to be unique across all of the components
         in an app.
 
-    - bubble_styles (dict; default {    user: {        backgroundColor: "#007bff",        color: "white",        marginLeft: "auto",        textAlign: "right",    },    assistant: {        backgroundColor: "#f1f0f0",        color: "black",        marginRight: "auto",        textAlign: "left",    },}):
-        Css styles to customize the chat message bubbles.
-
-        `bubble_styles` is a dict with keys:
-
-        - user (dict; optional)
-
-        - assistant (dict; optional)
+    - assistant_bubble_style (dict; optional):
+        Css styles to customize the assistant message bubbles.
 
     - class_name (string; default ""):
         Name for the class attribute to be added to the chat container.
@@ -69,7 +63,7 @@ class ChatComponent(Component):
     - persistence (boolean; default False):
         Whether messages should be stored for persistence.
 
-    - persistence_type (a value equal to: "localStorage", "sessionStorage"; default "localStorage"):
+    - persistence_type (a value equal to: "local", "session"; default "local"):
         Where persisted messages will be stored.
 
     - theme (string; default "light"):
@@ -79,7 +73,10 @@ class ChatComponent(Component):
     - typing_indicator (a value equal to: "dots", "spinner"; default "dots"):
         The type of typing indicator to display. Options are:    -
         `\"dots\"`: Displays animated dots.    - `\"spinner\"`: Displays a
-        spinner animation."""
+        spinner animation.
+
+    - user_bubble_style (dict; optional):
+        Css styles to customize the user message bubbles."""
 
     _children_props = []
     _base_nodes = ["children"]
@@ -99,7 +96,8 @@ class ChatComponent(Component):
         input_text_style=Component.UNDEFINED,
         fill_height=Component.UNDEFINED,
         fill_width=Component.UNDEFINED,
-        bubble_styles=Component.UNDEFINED,
+        user_bubble_style=Component.UNDEFINED,
+        assistant_bubble_style=Component.UNDEFINED,
         input_placeholder=Component.UNDEFINED,
         class_name=Component.UNDEFINED,
         persistence=Component.UNDEFINED,
@@ -108,7 +106,7 @@ class ChatComponent(Component):
     ):
         self._prop_names = [
             "id",
-            "bubble_styles",
+            "assistant_bubble_style",
             "class_name",
             "container_style",
             "fill_height",
@@ -122,11 +120,12 @@ class ChatComponent(Component):
             "persistence_type",
             "theme",
             "typing_indicator",
+            "user_bubble_style",
         ]
         self._valid_wildcard_attributes = []
         self.available_properties = [
             "id",
-            "bubble_styles",
+            "assistant_bubble_style",
             "class_name",
             "container_style",
             "fill_height",
@@ -140,6 +139,7 @@ class ChatComponent(Component):
             "persistence_type",
             "theme",
             "typing_indicator",
+            "user_bubble_style",
         ]
         self.available_wildcard_properties = []
         _explicit_args = kwargs.pop("_explicit_args")

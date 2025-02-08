@@ -10,9 +10,10 @@ app.layout = html.Div(
     [
         ChatComponent(
             id="chat-component",
-            messages=[
-                {"role": "assistant", "content": "Hello!"},
-            ],
+            messages=[],
+            class_name="container",
+            persistence=True,
+            persistence_type="local",
         )
     ]
 )
