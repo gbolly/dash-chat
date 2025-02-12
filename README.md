@@ -116,7 +116,6 @@ if __name__ == "__main__":
 ### **Persistence Functionality**
 The ChatComponent supports persistence, allowing messages to be stored and retrieved across page reloads. When persistence=True, messages are saved in the specified storage (localStorage or sessionStorage).
 
-#### **How It Works**
 On initialization, the component checks for stored messages.
 If stored messages exist, they are loaded; otherwise, an empty message list is used.
 New messages are automatically saved to storage.
