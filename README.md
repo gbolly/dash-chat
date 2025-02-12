@@ -69,7 +69,7 @@ def handle_chat(new_message, messages):
     return updated_messages
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run(debug=True)
 ```
 
 ### Example 2
@@ -110,7 +110,7 @@ def handle_chat(new_message, messages):
     return updated_messages
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run(debug=True)
 ```
 
 ### **Persistence Functionality**
