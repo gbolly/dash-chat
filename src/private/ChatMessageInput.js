@@ -24,10 +24,11 @@ const MessageInput = ({
     onSend,
     handleInputChange,
     value,
-    placeholder,
-    buttonLabel,
-    customStyles,
-    inputComponentStyles
+    placeholder = "Start typing...",
+    buttonLabel = "Send",
+    customStyles = null,
+    inputComponentStyles = null,
+    showTyping = false,
 }) => {
     return (
         <div className="message-input-container" style={customStyles}>
@@ -37,7 +38,7 @@ const MessageInput = ({
                 placeholder={placeholder}
                 onChange={handleInputChange}
                 onKeyDown={(e) => {
-                    if (e.key === "Enter"){
+                    if (e.key === "Enter" && !showTyping){
                         onSend();
                     }
                 }}
@@ -46,8 +47,9 @@ const MessageInput = ({
             />
             <button
                 onClick={onSend}
-                className="message-input-button"
+                className={`message-input-button ${showTyping ? 'disabled' : ''}`}
                 data-testid="send-button"
+                disabled={showTyping}
             >
                 {buttonLabel}
             </button>
@@ -83,14 +85,11 @@ MessageInput.propTypes = {
     /**
      * Inline styles for the input field.
     */
-    inputComponentStyles: PropTypes.object
-};
-
-MessageInput.defaultProps = {
-    placeholder: "Start typing...",
-    buttonLabel: "Send",
-    customStyles: null,
-    inputComponentStyles: null
+    inputComponentStyles: PropTypes.object,
+    /**
+     * Disable button when waiting for message.
+    */
+    showTyping: PropTypes.bool,
 };
 
 export default MessageInput;

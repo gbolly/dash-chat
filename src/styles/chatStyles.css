@@ -1,0 +1,129 @@
+.chat-container {
+    border: 1px solid;
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+}
+
+.message-input-container {
+    display: flex;
+    margin-top: 10px;
+    padding-top: 10px;
+}
+
+.message-input-field {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid;
+    border-radius: 4px;
+    margin-right: 5px;
+}
+
+.message-input-field:focus {
+    outline: none;
+}
+
+.message-input-button {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.message-input-container .disabled {
+    background-color: #efefef4d;
+    color: #1010104d;
+    border-color: #efefef4d;
+    cursor: auto;
+}
+
+.message-input-button:hover {
+    background-color: #0056b3;
+}
+
+.message-input-container .disabled:hover {
+    background-color: #efefef4d;
+}
+
+.chat-bubble {
+    max-width: 75%;
+    margin-bottom: 10px;
+    padding: 0px 10px 0px;
+    border-radius: 12px;
+    word-wrap: break-word;
+}
+
+.user .markdown-content a {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.user .markdown-content a:hover {
+    color: #212427;
+}
+
+.markdown-content code {
+    background-color: rgba(0, 0, 0, 0.4);
+    color: #ffffffda;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+.empty-chat {
+    margin: 0 auto;
+}
+
+.actionBtnContainer {
+    position: relative;
+}
+
+.dotsButton {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.dotsButton:hover {
+    background: #cccccc1f;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdownMenu {
+    position: absolute;
+    background-color: white;
+    width: 100px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.dropdownItem {
+    padding: 8px 12px;
+    background: none;
+    border: none;
+    text-align: left;
+    width: 100%;
+    cursor: pointer;
+}
+
+.dropdownItem:hover {
+    background-color: #f1f1f1;
+}
+

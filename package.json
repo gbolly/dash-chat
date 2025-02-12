@@ -1,6 +1,6 @@
 {
   "name": "dash-chat",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A chat component for Dash",
   "repository": {
     "type": "git",
@@ -27,7 +27,9 @@
   "author": "Gbolahan Okerayi <okerayigbolahan@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "ramda": "^0.26.1"
+    "ramda": "^0.26.1",
+    "react-markdown": "^9.0.3",
+    "remark-gfm": "^4.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.22.1",
@@ -39,6 +41,7 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "babel-eslint": "^10.1.0",
+    "babel-jest": "^29.7.0",
     "babel-loader": "^9.1.2",
     "copyfiles": "^2.1.1",
     "css-loader": "^6.8.1",
@@ -50,9 +53,9 @@
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "prop-types": "^15.8.1",
-    "react": "^19.0.0",
+    "react": "^18.3.1",
     "react-docgen": "^5.4.3",
-    "react-dom": "^19.0.0",
+    "react-dom": "^18.3.1",
     "style-loader": "^3.3.3",
     "styled-jsx": "^5.1.6",
     "webpack": "^5.84.1",

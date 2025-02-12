@@ -15,14 +15,29 @@
 */
 
 import React, { useEffect, useRef, useState } from "react";
+import Markdown from "react-markdown";
 import PropTypes from "prop-types";
+import remarkGfm from "remark-gfm";
 
 import MessageInput from "../../private/ChatMessageInput";
 import TypingIndicatorDots from "../../private/DotsIndicator";
 import TypingIndicatorSpinner from "../../private/SpinnerIndicator";
 
-import "../../styles/chatStyles1.css";
-import "../../styles/chatStyles2.css";
+import "../../styles/chatStyles.css";
+
+const defaultUserBubbleStyle = {
+    backgroundColor: "#007bff",
+    color: "white",
+    marginLeft: "auto",
+    textAlign: "right",
+};
+
+const defaultAssistantBubbleStyle = {
+    backgroundColor: "#f1f0f0",
+    color: "black",
+    marginRight: "auto",
+    textAlign: "left",
+};
 
 /**
  * ChatComponent - A React-based chat interface with customizable styles and typing indicators.
@@ -40,35 +55,95 @@ const ChatComponent = ({
      * it's expected to be named in the camelCase format.
      * https://dash.plotly.com/react-for-python-developers
     */
-    messages: propMessages,
-    theme,
-    container_style: containerStyle,
-    typing_indicator: typingIndicator,
-    input_container_style: inputContainerStyle,
-    input_text_style: inputTextStyle,
-    setProps,
-    fill_height: fillHeight,
-    fill_width: fillWidth,
+    id,
+    messages = [],
+    theme = "light",
+    container_style: containerStyle = null,
+    typing_indicator: typingIndicator = "dots",
+    input_container_style: inputContainerStyle = null,
+    input_text_style: inputTextStyle = null,
+    setProps = () => { },
+    fill_height: fillHeight = true,
+    fill_width: fillWidth = true,
+    user_bubble_style: userBubbleStyleProp = {},
+    assistant_bubble_style: assistantBubbleStyleProp = {},
+    input_placeholder: inputPlaceholder = "",
+    class_name: className = "",
+    persistence = false,
+    persistence_type: persistenceType = "local",
 }) => {
+    const userBubbleStyle = { ...defaultUserBubbleStyle, ...userBubbleStyleProp };
+    const assistantBubbleStyle = { ...defaultAssistantBubbleStyle, ...assistantBubbleStyleProp };
     const [currentMessage, setCurrentMessage] = useState("");
-    const [localMessages, setLocalMessages] = useState(propMessages || []);
-    const messageEndRef = useRef(null);
+    const [localMessages, setLocalMessages] = useState([]);
     const [showTyping, setShowTyping] = useState(false);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const messageEndRef = useRef(null);
+    const dropdownRef = useRef(null);
 
+    let storeType;
+    if (persistenceType === "local") {
+        storeType = "localStorage";
+    } else if (persistenceType === "local") {
+        storeType = "sessionStorage";
+    }
+
+    // load messages from storage or initialize from messages
     useEffect(() => {
-        const lastMsg = propMessages.slice(-1).pop();
-
-        if (lastMsg?.role === "assistant" && showTyping) {
-            setShowTyping(false);
+        if (persistence) {
+            const savedMessages = JSON.parse(window[storeType].getItem(id)) || [];
+            const initialized = JSON.parse(window[storeType].getItem(`${id}-initialized`));
+            if (savedMessages.length > 0) {
+                setLocalMessages(savedMessages);
+            } else if (!initialized && messages.length > 0) {
+                setLocalMessages(messages);
+                window[storeType].setItem(id, JSON.stringify(messages));
+                window[storeType].setItem(`${id}-initialized`, "true");
+            }
+        } else {
+            setLocalMessages(messages);
         }
-        setLocalMessages(propMessages || []);
-    }, [propMessages]);
+    }, [id, persistence, storeType]);
+
+    // persist messages whenever localMessages updates
+    useEffect(() => {
+        if (persistence && localMessages.length > 0) {
+            window[storeType].setItem(id, JSON.stringify(localMessages));
+        }
+    }, [localMessages, id, persistence, storeType]);
+
+    // hide typing indicator & update local messages with new ones
+    useEffect(() => {
+        if (messages.length > 0) {
+            const lastMsg = messages.slice(-1).pop();
+            if (lastMsg?.role === "assistant" && showTyping) {
+                setShowTyping(false);
+                setLocalMessages((prevMessages) => [...prevMessages, lastMsg]);
+            } else {
+                setLocalMessages(messages || []);
+            }
+        }
+    }, [messages]);
 
     useEffect(() => {
         if (messageEndRef.current) {
             messageEndRef.current.scrollIntoView({ behavior: "smooth" });
         }
     }, [localMessages]);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
 
     const handleInputChange = (e) => {
         setCurrentMessage(e.target.value);
@@ -77,7 +152,13 @@ const ChatComponent = ({
     const handleSendMessage = () => {
         if (currentMessage.trim()) {
             const newMessage = { role: "user", content: currentMessage };
-            setLocalMessages((prevMessages) => [...prevMessages, newMessage]);
+            setLocalMessages((prevMessages) => {
+                const updatedMessages = [...prevMessages, newMessage];
+                if (persistence) {
+                    window[storeType].setItem(id, JSON.stringify(updatedMessages));
+                }
+                return updatedMessages;
+            });
 
             if (setProps) {
                 setProps({ new_message: newMessage });
@@ -88,48 +169,108 @@ const ChatComponent = ({
         }
     };
 
-    const styleChatContainerSize = {};
+    const handleClearChat = () => {
+        setLocalMessages([]);
+        if (persistence) {
+            window[storeType].removeItem(id);
+        }
+        setDropdownOpen(false);
+    };
+
+    const styleChatContainer = {};
+    const inputFieldStyle = {};
     if (fillHeight) {
-        styleChatContainerSize.height = "95vh";
+        styleChatContainer.height = "100%";
     } else {
-        styleChatContainerSize.height = "50vh";
+        styleChatContainer.height = "50%";
     }
     if (fillWidth) {
-        styleChatContainerSize.width = "100%";
+        styleChatContainer.width = "auto";
     } else {
-        styleChatContainerSize.width = "50%";
-        styleChatContainerSize.margin = "0 auto";
+        styleChatContainer.width = "50%";
+    }
+    if (theme === "dark") {
+        styleChatContainer.backgroundColor = "#161618";
+        styleChatContainer.borderColor = "#444444";
+        styleChatContainer.color = "#ffffff";
+        inputFieldStyle.borderColor = "#f1f0f0";
+        inputFieldStyle.color = "#000000";
+    } else {
+        styleChatContainer.backgroundColor = "#ffffff";
+        styleChatContainer.borderColor = "#e0e0e0";
+        styleChatContainer.color = "#e0e0e0";
+        inputFieldStyle.borderColor = "#e0e0e0"
     }
 
     return (
-        <div className="container">
-            <div
-                className={`chat-container ${theme === "dark" ? "default2" : "default1"}`}
-                style={{ ...containerStyle, ...styleChatContainerSize }}
-            >
-                <div className="chat-messages">
-                    {localMessages.map((message, index) => (
-                        <div key={index} className={`chat-bubble ${message.role}`}>
-                            {message.content}
-                        </div>
-                    ))}
-                    {showTyping && (
-                        <div className="typing-indicator user-typing" data-testid="typing-indicator">
-                            {typingIndicator === "dots" && <TypingIndicatorDots />}
-                            {typingIndicator === "spinner" && <TypingIndicatorSpinner />}
-                        </div>
-                    )}
-                    <div ref={messageEndRef} />
+        <div className={`chat-container ${className}`} style={{ ...styleChatContainer, ...containerStyle }}>
+            {persistence && (
+                <div className="actionBtnContainer" ref={dropdownRef}>
+                    <div className="dropdown">
+                        <button className="dotsButton" onClick={() => setDropdownOpen(!dropdownOpen)} aria-label="clear">
+                            &#x22EE;
+                        </button>
+                        {dropdownOpen && (
+                            <div className="dropdownMenu">
+                                <button onClick={handleClearChat} className="dropdownItem">
+                                    Clear chat
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
-                <div className="chat-input">
-                    <MessageInput
-                        onSend={handleSendMessage}
-                        handleInputChange={handleInputChange}
-                        value={currentMessage}
-                        customStyles={inputContainerStyle}
-                        inputComponentStyles={inputTextStyle}
-                    />
-                </div>
+            )}
+            <div className="chat-messages">
+                {localMessages.length === 0 ? (
+                    <div className="empty-chat">No conversation yet.</div>
+                ) : (
+                    localMessages.map((message, index) => {
+                        if (!message || typeof message !== "object" || !message.role || !message.content) {
+                            return null;
+                        }
+                        const bubbleStyle = message.role === "user" ? userBubbleStyle : assistantBubbleStyle;
+                        return (
+                            <div
+                                key={index}
+                                className={`chat-bubble ${message.role}`}
+                                style={bubbleStyle}
+                            >
+                                <div className="markdown-content">
+                                    <Markdown
+                                        remarkPlugins={[remarkGfm]}
+                                        components={{
+                                            a: ({ href, children }) => (
+                                                <a href={href} target="_blank" rel="noopener noreferrer">
+                                                    {children}
+                                                </a>
+                                            ),
+                                        }}
+                                    >
+                                        {message.content}
+                                    </Markdown>
+                                </div>
+                            </div>
+                        )
+                    })
+                )}
+                {showTyping && (
+                    <div className="typing-indicator user-typing" data-testid="typing-indicator">
+                        {typingIndicator === "dots" && <TypingIndicatorDots />}
+                        {typingIndicator === "spinner" && <TypingIndicatorSpinner />}
+                    </div>
+                )}
+                <div ref={messageEndRef} />
+            </div>
+            <div className="chat-input">
+                <MessageInput
+                    onSend={handleSendMessage}
+                    handleInputChange={handleInputChange}
+                    value={currentMessage}
+                    customStyles={inputContainerStyle}
+                    inputComponentStyles={{ ...inputFieldStyle, ...inputTextStyle }}
+                    placeholder={inputPlaceholder}
+                    showTyping={showTyping}
+                />
             </div>
         </div>
     );
@@ -149,7 +290,7 @@ ChatComponent.propTypes = {
     */
     messages: PropTypes.arrayOf(
         PropTypes.shape({
-            role: PropTypes.oneOf(["user", "assistant"]),
+            role: PropTypes.oneOf(["user", "assistant"]).isRequired,
             content: PropTypes.string.isRequired,
         })
     ),
@@ -191,18 +332,30 @@ ChatComponent.propTypes = {
      * Whether to horizontally fill the screen with the chat container. If False, centers and constrains container to a maximum width.
     */
     fill_width: PropTypes.bool,
-};
-
-ChatComponent.defaultProps = {
-    setProps: () => {},
-    theme: "light",
-    container_style: null,
-    typing_indicator: "dots",
-    new_message: null,
-    input_container_style: null,
-    input_text_style: null,
-    fill_height: true,
-    fill_width: true
+    /**
+     * Css styles to customize the user message bubble.
+    */
+    user_bubble_style: PropTypes.object,
+    /**
+     * Css styles to customize the assistant message bubble.
+    */
+    assistant_bubble_style: PropTypes.object,
+    /**
+     * Placeholder input to bne used in the input field
+    */
+    input_placeholder: PropTypes.string,
+    /**
+     * Name for the class attribute to be added to the chat container
+    */
+    class_name: PropTypes.string,
+    /**
+     * Whether messages should be stored for persistence
+    */
+    persistence: PropTypes.bool,
+    /**
+     * Where persisted messages will be stored
+    */
+    persistence_type: PropTypes.oneOf(["local", "session"]),
 };
 
 export default ChatComponent;

@@ -10,9 +10,10 @@ app.layout = html.Div(
     [
         ChatComponent(
             id="chat-component",
-            messages=[
-                {"role": "assistant", "content": "Hello!"},
-            ],
+            messages=[],
+            class_name="container",
+            persistence=True,
+            persistence_type="local",
         )
     ]
 )
@@ -39,4 +40,4 @@ def handle_chat(new_message, messages):
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run(debug=True)

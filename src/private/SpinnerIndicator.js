@@ -6,7 +6,9 @@ import "../styles/indicatorStyle.css"
 /**
  * A resuable spinner typing indicator
 */
-const TypingIndicatorSpinner = ({ size, color }) => {
+const SPINNER_SIZE = 20;
+
+const TypingIndicatorSpinner = ({ size = SPINNER_SIZE, color = "gray" }) => {
     return (
         <div
             className="typing-spinner"
@@ -29,12 +31,6 @@ TypingIndicatorSpinner.propTypes = {
      * Color of the spinner
     */
     color: PropTypes.string,
-};
-
-
-TypingIndicatorSpinner.defaultProps = {
-    size: 20,
-    color: "gray",
 };
 
 export default TypingIndicatorSpinner;
