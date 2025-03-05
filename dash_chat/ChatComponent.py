@@ -20,7 +20,7 @@ class ChatComponent(Component):
         in an app.
 
     - assistant_bubble_style (dict; optional):
-        Css styles to customize the assistant message bubbles.
+        Css styles to customize the assistant message bubble.
 
     - class_name (string; default ""):
         Name for the class attribute to be added to the chat container.
@@ -55,7 +55,7 @@ class ChatComponent(Component):
 
         - role (a value equal to: "user", "assistant"; required)
 
-        - content (string; required)
+        - content (list | string; required)
 
     - new_message (dict; optional):
         Latest chat message that was appended to messages array.
@@ -76,7 +76,7 @@ class ChatComponent(Component):
         spinner animation.
 
     - user_bubble_style (dict; optional):
-        Css styles to customize the user message bubbles."""
+        Css styles to customize the user message bubble."""
 
     _children_props = []
     _base_nodes = ["children"]

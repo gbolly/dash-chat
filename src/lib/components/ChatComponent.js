@@ -15,9 +15,11 @@
 */
 
 import React, { useEffect, useRef, useState } from "react";
+import { EllipsisVertical } from "lucide-react";
 import Markdown from "react-markdown";
 import PropTypes from "prop-types";
 import remarkGfm from "remark-gfm";
+import { FileText } from "lucide-react";
 
 import MessageInput from "../../private/ChatMessageInput";
 import TypingIndicatorDots from "../../private/DotsIndicator";
@@ -75,6 +77,7 @@ const ChatComponent = ({
     const userBubbleStyle = { ...defaultUserBubbleStyle, ...userBubbleStyleProp };
     const assistantBubbleStyle = { ...defaultAssistantBubbleStyle, ...assistantBubbleStyleProp };
     const [currentMessage, setCurrentMessage] = useState("");
+    const [attachment, setAttachment] = useState("");
     const [localMessages, setLocalMessages] = useState([]);
     const [showTyping, setShowTyping] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -149,9 +152,35 @@ const ChatComponent = ({
         setCurrentMessage(e.target.value);
     };
 
-    const handleSendMessage = () => {
-        if (currentMessage.trim()) {
-            const newMessage = { role: "user", content: currentMessage };
+    const convertFileToBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = (error) => reject(error);
+        });
+    };
+
+    const handleSendMessage = async () => {
+        if (currentMessage.trim() || attachment) {
+            let content;
+
+            if (attachment) {
+                const base64File = await convertFileToBase64(attachment);
+                content = [
+                    { type: "text", text: currentMessage.trim() },
+                    {
+                        type: "attachment",
+                        file: base64File,
+                        fileName: attachment.name,
+                        fileType: attachment.type
+                    },
+                ];
+            } else {
+                content = currentMessage.trim();
+            }
+
+            const newMessage = { role: "user", content };
             setLocalMessages((prevMessages) => {
                 const updatedMessages = [...prevMessages, newMessage];
                 if (persistence) {
@@ -166,6 +195,7 @@ const ChatComponent = ({
 
             setShowTyping(true);
             setCurrentMessage("");
+            setAttachment(null);
         }
     };
 
@@ -208,7 +238,7 @@ const ChatComponent = ({
                 <div className="actionBtnContainer" ref={dropdownRef}>
                     <div className="dropdown">
                         <button className="dotsButton" onClick={() => setDropdownOpen(!dropdownOpen)} aria-label="clear">
-                            &#x22EE;
+                            <EllipsisVertical size={24} />
                         </button>
                         {dropdownOpen && (
                             <div className="dropdownMenu">
@@ -230,31 +260,40 @@ const ChatComponent = ({
                         }
                         const bubbleStyle = message.role === "user" ? userBubbleStyle : assistantBubbleStyle;
                         return (
-                            <div
-                                key={index}
-                                className={`chat-bubble ${message.role}`}
-                                style={bubbleStyle}
-                            >
+                            <div key={index} className={`chat-bubble ${message.role}`} style={bubbleStyle}>
                                 <div className="markdown-content">
-                                    <Markdown
-                                        remarkPlugins={[remarkGfm]}
-                                        components={{
-                                            a: ({ href, children }) => (
-                                                <a href={href} target="_blank" rel="noopener noreferrer">
-                                                    {children}
-                                                </a>
-                                            ),
-                                        }}
-                                    >
-                                        {message.content}
-                                    </Markdown>
+                                    {Array.isArray(message.content) ? (
+                                        message.content.map((item, i) => (
+                                            <div key={i} className="attachment-text-container">
+                                                {item.type === "text" && (
+                                                    <Markdown remarkPlugins={[remarkGfm]}>{item.text}</Markdown>
+                                                )}
+
+                                                {item.type === "attachment" && (
+                                                    item.fileName.match(/\.(jpeg|jpg|png|gif)$/i) ? (
+                                                        <img
+                                                            src={item.file}
+                                                            alt={item.fileName}
+                                                            style={{ maxWidth: "30%", borderRadius: "5px", paddingTop: "10px" }}
+                                                        />
+                                                    ) : (
+                                                        <a href={item.file} target="_blank" rel="noopener noreferrer">
+                                                            <FileText size={15} /> View {item.fileName}
+                                                        </a>
+                                                    )
+                                                )}
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <Markdown remarkPlugins={[remarkGfm]}>{message.content}</Markdown>
+                                    )}
                                 </div>
                             </div>
-                        )
+                        );
                     })
                 )}
                 {showTyping && (
-                    <div className="typing-indicator user-typing" data-testid="typing-indicator">
+                    <div className="typing-indicator user-typing">
                         {typingIndicator === "dots" && <TypingIndicatorDots />}
                         {typingIndicator === "spinner" && <TypingIndicatorSpinner />}
                     </div>
@@ -270,6 +309,7 @@ const ChatComponent = ({
                     inputComponentStyles={{ ...inputFieldStyle, ...inputTextStyle }}
                     placeholder={inputPlaceholder}
                     showTyping={showTyping}
+                    setAttachment={setAttachment}
                 />
             </div>
         </div>
@@ -291,7 +331,10 @@ ChatComponent.propTypes = {
     messages: PropTypes.arrayOf(
         PropTypes.shape({
             role: PropTypes.oneOf(["user", "assistant"]).isRequired,
-            content: PropTypes.string.isRequired,
+            content: PropTypes.oneOfType([
+                PropTypes.array,
+                PropTypes.string,
+            ]).isRequired,
         })
     ),
     /**

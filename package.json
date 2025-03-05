@@ -27,6 +27,7 @@
   "author": "Gbolahan Okerayi <okerayigbolahan@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "lucide-react": "^0.477.0",
     "ramda": "^0.26.1",
     "react-markdown": "^9.0.3",
     "remark-gfm": "^4.0.0"
