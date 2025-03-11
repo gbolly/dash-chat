@@ -15,12 +15,12 @@ class ChatComponent(Component):
     Keyword arguments:
 
     - id (string; optional):
-        The ID of this component, used to identify dash components in
-        callbacks. The ID needs to be unique across all of the components
+        The ID of this component, used to identify dash components  in
+        callbacks. The ID needs to be unique across all of the  components
         in an app.
 
     - assistant_bubble_style (dict; optional):
-        Css styles to customize the assistant message bubbles.
+        Css styles to customize the assistant message bubble.
 
     - class_name (string; default ""):
         Name for the class attribute to be added to the chat container.
@@ -47,8 +47,8 @@ class ChatComponent(Component):
 
     - messages (list of dicts; optional):
         An array of options. The list of chat messages. Each message
-        object should have:    - `role` (string): The message sender,
-        either \"user\" or \"assistant\".    - `content` (string): The
+        object should have:     - `role` (string): The message sender,
+        either \"user\" or \"assistant\".     - `content` (string): The
         content of the message.
 
         `messages` is a list of dicts with keys:
@@ -71,12 +71,12 @@ class ChatComponent(Component):
         for a dark mode appearance.
 
     - typing_indicator (a value equal to: "dots", "spinner"; default "dots"):
-        The type of typing indicator to display. Options are:    -
-        `\"dots\"`: Displays animated dots.    - `\"spinner\"`: Displays a
-        spinner animation.
+        The type of typing indicator to display. Options are:     -
+        `\"dots\"`: Displays animated dots.     - `\"spinner\"`: Displays
+        a spinner animation.
 
     - user_bubble_style (dict; optional):
-        Css styles to customize the user message bubbles."""
+        Css styles to customize the user message bubble."""
 
     _children_props = []
     _base_nodes = ["children"]
@@ -102,7 +102,7 @@ class ChatComponent(Component):
         class_name=Component.UNDEFINED,
         persistence=Component.UNDEFINED,
         persistence_type=Component.UNDEFINED,
-        **kwargs
+        **kwargs,
     ):
         self._prop_names = [
             "id",
