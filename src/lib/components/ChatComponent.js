@@ -15,11 +15,10 @@
 */
 
 import React, { useEffect, useRef, useState } from "react";
-import { EllipsisVertical } from "lucide-react";
+import { EllipsisVertical, FileText } from "lucide-react";
 import Markdown from "react-markdown";
 import PropTypes from "prop-types";
 import remarkGfm from "remark-gfm";
-import { FileText } from "lucide-react";
 
 import MessageInput from "../../private/ChatMessageInput";
 import TypingIndicatorDots from "../../private/DotsIndicator";
@@ -64,7 +63,7 @@ const ChatComponent = ({
     typing_indicator: typingIndicator = "dots",
     input_container_style: inputContainerStyle = null,
     input_text_style: inputTextStyle = null,
-    setProps = () => { },
+    setProps = () => {},
     fill_height: fillHeight = true,
     fill_width: fillWidth = true,
     user_bubble_style: userBubbleStyleProp = {},
@@ -73,6 +72,7 @@ const ChatComponent = ({
     class_name: className = "",
     persistence = false,
     persistence_type: persistenceType = "local",
+    file_types : fileTypes = "*/*",
 }) => {
     const userBubbleStyle = { ...defaultUserBubbleStyle, ...userBubbleStyleProp };
     const assistantBubbleStyle = { ...defaultAssistantBubbleStyle, ...assistantBubbleStyleProp };
@@ -293,7 +293,7 @@ const ChatComponent = ({
                     })
                 )}
                 {showTyping && (
-                    <div className="typing-indicator user-typing">
+                    <div className="typing-indicator user-typing" data-testid="typing-indicator">
                         {typingIndicator === "dots" && <TypingIndicatorDots />}
                         {typingIndicator === "spinner" && <TypingIndicatorSpinner />}
                     </div>
@@ -310,6 +310,7 @@ const ChatComponent = ({
                     placeholder={inputPlaceholder}
                     showTyping={showTyping}
                     setAttachment={setAttachment}
+                    fileTypes={fileTypes}
                 />
             </div>
         </div>
@@ -399,6 +400,10 @@ ChatComponent.propTypes = {
      * Where persisted messages will be stored
     */
     persistence_type: PropTypes.oneOf(["local", "session"]),
+    /**
+     * Comma separated type of files to accept in the attachment file input
+    */
+    file_types: PropTypes.string,
 };
 
 export default ChatComponent;

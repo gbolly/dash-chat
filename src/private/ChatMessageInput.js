@@ -33,6 +33,7 @@ const MessageInput = ({
     customStyles = null,
     inputComponentStyles = null,
     showTyping = false,
+    fileTypes,
 }) => {
     const fileInputRef = useRef(null);
     const [selectedFile, setSelectedFile] = useState(null);
@@ -48,6 +49,8 @@ const MessageInput = ({
 
             if (fileType.startsWith("image/")) {
                 setFilePreview(URL.createObjectURL(file));
+            } else {
+                setFilePreview(file.name);
             }
         }
     };
@@ -69,7 +72,11 @@ const MessageInput = ({
         <div className="message-input-container" style={customStyles}>
             {filePreview && (
                 <div className="file-preview-container">
-                    <button className="remove-file-button" onClick={handleRemoveFile}>
+                    <button
+                        className="remove-file-button"
+                        onClick={handleRemoveFile}
+                        data-testid="file-remove-button"
+                    >
                         <X size={10} />
                     </button>
                     {(
@@ -101,15 +108,20 @@ const MessageInput = ({
                 className="message-input-field"
             />
             <div className="input-with-icons">
-                <button className="file-upload-button" onClick={() => fileInputRef.current.click()}>
+                <button
+                    className="file-upload-button"
+                    onClick={() => fileInputRef.current.click()}
+                    data-testid="file-upload-button"
+                >
                     <Paperclip size={20} />
                 </button>
                 <input
                     type="file"
                     ref={fileInputRef}
                     style={{ display: "none" }}
-                    accept="image/*,.pdf,.doc"
+                    accept={fileTypes}
                     onChange={handleFileUpload}
+                    data-testid="file-input"
                 />
                 <button
                     onClick={handleSend}
@@ -158,9 +170,13 @@ MessageInput.propTypes = {
     */
     showTyping: PropTypes.bool,
     /**
-     * .
+     * Set file attached to state.
     */
     setAttachment: PropTypes.func,
+    /**
+     * Comma separated supported file types.
+    */
+    fileTypes: PropTypes.string,
 };
 
 export default MessageInput;

@@ -188,7 +188,3 @@
 .dropdownItem:hover {
     background-color: #f1f1f1;
 }
-
-.dash-debug-menu__outer, .dash-debug-menu {
-    display: none !important;
-}

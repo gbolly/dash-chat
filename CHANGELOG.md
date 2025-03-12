@@ -19,6 +19,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Security
 
+## [0.2.1] - 2025-03-12
+
+- Support file uploads.
+
 ## [0.2.0] - 2025-02-12
 
 - Support text markdown formats.

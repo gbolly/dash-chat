@@ -28,6 +28,10 @@ class ChatComponent(Component):
     - container_style (dict; optional):
         Inline css styles to customize the chat container.
 
+    - file_types (string; default "*/*"):
+        Comma separated type of files to accept in the attachment file
+        input.
+
     - fill_height (boolean; default True):
         Whether to vertically fill the screen with the chat container. If
         False, centers and constrains container to a maximum height.
@@ -102,6 +106,7 @@ class ChatComponent(Component):
         class_name=Component.UNDEFINED,
         persistence=Component.UNDEFINED,
         persistence_type=Component.UNDEFINED,
+        file_types=Component.UNDEFINED,
         **kwargs
     ):
         self._prop_names = [
@@ -109,6 +114,7 @@ class ChatComponent(Component):
             "assistant_bubble_style",
             "class_name",
             "container_style",
+            "file_types",
             "fill_height",
             "fill_width",
             "input_container_style",
@@ -128,6 +134,7 @@ class ChatComponent(Component):
             "assistant_bubble_style",
             "class_name",
             "container_style",
+            "file_types",
             "fill_height",
             "fill_width",
             "input_container_style",

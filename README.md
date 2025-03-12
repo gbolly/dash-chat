@@ -73,6 +73,106 @@ if __name__ == "__main__":
 ```
 
 ### Example 2
+To send local images and files along with a message to the AI assistant, the structure of `content` in the `messages` prop becomes a list of dictionary. The `content` takes the structure;
+
+```python
+    [
+        {"type": "text", "text": "Analyze image"},
+        {
+            "type": "attachment",
+            "file": <base64File>,
+            "fileName": <file.name>,
+            "fileType": <file.type>
+        },
+    ]
+```
+In your dash callback, follow the OpenAI-style for uploading images with text.
+
+![dash-chat-demo](https://github.com/gbolly/dash-chat/blob/main/dash-chat-demo.gif?raw=true)
+
+```python
+import os
+import dash
+from dash import callback, html, Input, Output, State
+from dash_chat import ChatComponent
+from openai import OpenAI
+
+
+api_key = os.environ.get("OPENAI_API_KEY")
+client = OpenAI(api_key=api_key)
+
+app = dash.Dash(__name__)
+
+app.layout = html.Div([
+    ChatComponent(
+        id="chat-component",
+        messages=[],
+        file_types=".png,.jpg,.pdf,.doc"
+    )
+])
+
+@callback(
+    Output("chat-component", "messages"),
+    Input("chat-component", "new_message"),
+    State("chat-component", "messages"),
+    prevent_initial_call=True,
+)
+def handle_chat(new_message, messages):
+    if not new_message:
+        return messages
+
+    if isinstance(new_message["content"], list):
+        user_content = []
+        for item in new_message["content"]:
+            if item["type"] == "text":
+                user_content.append({"type": "text", "text": item["text"]})
+            elif item["type"] == "attachment":
+                file_type = item["fileType"]
+                file_path = item["file"]
+                file_name = item["fileName"]
+
+                if file_type.startswith("image/"):
+                    user_content.append(
+                        {"type": "image_url", "image_url": {"url": file_path}}
+                    )
+                else:
+                    # other file types (PDF, DOCX, etc.)
+                    decoded_bytes = decode_base64(file_path)
+                    uploaded_file = client.files.create(
+                        file=(file_name, BytesIO(decoded_bytes), file_type),
+                        purpose="user_data"
+                    )
+                    user_content.append({
+                        "type": "text",
+                        "text": f"File '{file_name}' uploaded. ID: {uploaded_file.id}",
+                    })
+        updated_messages = messages + [{"role": "user", "content": user_content}]
+    else:
+        updated_messages = messages + [new_message]
+
+    if new_message["role"] == "user":
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=updated_messages,
+            temperature=1.0,
+            max_tokens=150,
+        )
+
+        bot_response = {
+            "role": "assistant",
+            "content": response.choices[0].message.content.strip(),
+        }
+
+        return updated_messages + [bot_response]
+
+    return updated_messages
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
+```
+
+### Example 3
 
 ```python
 import time
@@ -151,6 +251,7 @@ ChatComponent(
 | **class_name**                | `string`                  | `None`                         | Name to use as class attribute on the main chat container.                                    |
 | **persistence**               | `boolean`                 | `False`                        | Whether to store chat messages so that it can be persisted.                                   |
 | **persistence_type**          | `string`                  | `"local"`                      | Where chat messages will be stored for persistence. Options: `"local"` or `"session"`         |
+| **file_types**          | `string`                  | `"*/*"`                      | List of comma separated file types to support in the file input         |
 
 ## License
 
