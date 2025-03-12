@@ -119,7 +119,7 @@ const ChatComponent = ({
     useEffect(() => {
         if (messages.length > 0) {
             const lastMsg = messages.slice(-1).pop();
-            if (lastMsg?.role === "assistant" && showTyping) {
+            if (lastMsg?.role === "assistant") {
                 setShowTyping(false);
                 setLocalMessages((prevMessages) => [...prevMessages, lastMsg]);
             } else {
@@ -180,7 +180,7 @@ const ChatComponent = ({
                 content = currentMessage.trim();
             }
 
-            const newMessage = { role: "user", content };
+            const newMessage = { role: "user", content, id: Date.now() };
             setLocalMessages((prevMessages) => {
                 const updatedMessages = [...prevMessages, newMessage];
                 if (persistence) {
@@ -266,7 +266,9 @@ const ChatComponent = ({
                                         message.content.map((item, i) => (
                                             <div key={i} className="attachment-text-container">
                                                 {item.type === "text" && (
-                                                    <Markdown remarkPlugins={[remarkGfm]}>{item.text}</Markdown>
+                                                    <Markdown remarkPlugins={[remarkGfm]}>
+                                                        {item.text}
+                                                    </Markdown>
                                                 )}
 
                                                 {item.type === "attachment" && (
@@ -285,7 +287,9 @@ const ChatComponent = ({
                                             </div>
                                         ))
                                     ) : (
-                                        <Markdown remarkPlugins={[remarkGfm]}>{message.content}</Markdown>
+                                        <Markdown remarkPlugins={[remarkGfm]}>
+                                            {message.content}
+                                        </Markdown>
                                     )}
                                 </div>
                             </div>

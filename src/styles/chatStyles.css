@@ -188,3 +188,29 @@
 .dropdownItem:hover {
     background-color: #f1f1f1;
 }
+
+.markdown-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.markdown-content th, .markdown-content td {
+    border: 1px solid #ddd;
+    padding: 15px;
+    text-align: left;
+}
+
+.markdown-content th {
+    background-color: #007bff;
+    color: white;
+}
+
+.markdown-content tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.markdown-content tr:hover {
+    background-color: #ddd;
+}

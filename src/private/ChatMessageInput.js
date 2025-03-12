@@ -62,7 +62,7 @@ const MessageInput = ({
 
     const handleSend = () => {
         if (value.trim() || selectedFile) {
-            onSend(value, selectedFile);
+            onSend(value.trim(), selectedFile);
             setSelectedFile(null);
             setFilePreview(null);
         }
@@ -101,6 +101,7 @@ const MessageInput = ({
                 onChange={handleInputChange}
                 onKeyDown={(e) => {
                     if (e.key === "Enter" && !showTyping) {
+                        e.preventDefault();
                         handleSend();
                     }
                 }}

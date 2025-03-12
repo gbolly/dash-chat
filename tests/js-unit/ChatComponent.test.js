@@ -4,6 +4,7 @@ import ChatComponent from "../../src/lib/components/ChatComponent";
 
 describe("ChatComponent", () => {
     const mockSetProps = jest.fn();
+    Date.now = jest.fn(() => 1741822740027);
 
     beforeAll(() => {
         window.HTMLElement.prototype.scrollIntoView = jest.fn();
@@ -125,7 +126,7 @@ describe("ChatComponent", () => {
         fireEvent.click(sendButton);
 
         expect(mockSetProps).toHaveBeenCalledWith({
-            new_message: { role: "user", content: "This is a test message" },
+            new_message: { role: "user", content: "This is a test message", id: 1741822740027 },
         });
     });
 
@@ -170,7 +171,7 @@ describe("ChatComponent", () => {
 
     it("saves messages to localStorage when persistence is enabled", () => {
         const id = "chat-component";
-        const messages = [{ role: "user", content: "Hello!" }];
+        const messages = [{ role: "user", content: "Hello!", id: 1741822740027 }];
         render(<ChatComponent id={id} persistence={true} persistence_type="local" />);
         const inputField = screen.getByRole("textbox");
         const sendButton = screen.getByTestId("send-button");

@@ -19,9 +19,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Security
 
-## [0.2.1] - 2025-03-12
+## [0.2.1] - 2025-03-24
 
 - Support file uploads.
+- Fix indefinite loading when same message is sent twice.
+- Add minimal styling to table.
 
 ## [0.2.0] - 2025-02-12
 
