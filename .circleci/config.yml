@@ -58,7 +58,7 @@ jobs:
           name: Run black
           command: |
             . venv/bin/activate
-            black --check tests usage.py dash_chat
+            black --check . dash_chat
       - run:
           name: Run tests
           command: |
