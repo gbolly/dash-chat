@@ -230,6 +230,110 @@ ChatComponent(
 )
 ```
 
+### **Renderers (Graphs, Tables, Attachments & Text)**
+`dash-chat` supports rich content rendering by allowing messages to contain structured content types like graphs, tables, and images. You can render custom content by passing a structured list to the content field of a message.
+
+#### Supported Built-in Renderers
+#### Text
+```python
+{
+    "role": "assistant",
+    "content": {
+        "type": "text",
+        "text": "This will be rendered as a markdown message"
+    },
+}
+```
+
+#### Attachments (Images & Files)
+```python
+{
+    "role": "assistant",
+    "content": {
+        "type": "attachment",
+        "file": "data:image/png;base64,...",
+        "fileName": "example.png",
+        "fileType": "image/png"
+    }
+}
+```
+Renders an image or a downloadable file preview.
+
+#### Graph
+```python
+{
+    "role": "assistant",
+    "content": {
+        "type": "graph",
+        "props": {
+            "data": [
+                {
+                    "x": [1, 2, 3],
+                    "y": [4, 1, 2],
+                    "type": "bar", "name": "Demo"
+                }
+            ],
+            "layout": {"title": "Bar Chart"},
+            "config": {"responsive": True},
+        }
+    }
+}
+```
+Renders an interactive Plotly chart. The props object supports the arguments you would pass to a graph in Plotly.
+
+#### Table
+```python
+{
+    "role": "assistant",
+    "content": {
+        "type": "table",
+        "props": {
+            "columns": ["Order ID", "Item", "Quantity", "Total"],
+            "data": [
+                ["#1021", "Apple iPhone", 1, "$799"],
+                ["#1022", "Samsung Galaxy", 2, "$1398"]
+            ]
+            "striped": True,
+            "bordered": True,
+            "hover": True,
+            "responsive": True,
+            "size": "lg"
+        }
+    }
+}
+```
+Renders an HTML table. It supports all the arguments as bootstrap table
+
+Multiple supported renderers can also be provided as the assistants' content:
+```python
+{
+    "role": "assistant",
+    "content": [
+        {"type": "text", "text": "Here's a bar chart of your data."},
+        {
+            "type": "graph",
+            "props": {
+                "data": [{"x": [1, 2, 3], "y": [4, 1, 2], "type": "bar", "name": "Demo"}],
+                "layout": {"title": "Bar Chart"},
+                "config": {"responsive": True},
+            },
+        },
+        {
+            "type": "table",
+            "props": {
+                "columns": ["Order ID", "Item", "Quantity", "Total"],
+                "data": [
+                    ["#1021", "iPhone 14", 1, "$799"],
+                    ["#1022", "Galaxy S22", 2, "$1398"],
+                    ["#1023", "Pixel 7", 1, "$599"],
+                ],
+            },
+        },
+    ]
+}
+```
+For a complete example of how to setup dash apps and how to uses renderers see the `usage` folder.
+
 ### **Props**
 
 `ChatComponent` can be configured with the following properties:

@@ -28,7 +28,7 @@ class ChatComponent(Component):
     - container_style (dict; optional):
         Inline css styles to customize the chat container.
 
-    - file_types (string; default "*/*"):
+    - file_types_to_support (string; default "*/*"):
         Comma separated type of files to accept in the attachment file
         input.
 
@@ -52,14 +52,20 @@ class ChatComponent(Component):
     - messages (list of dicts; optional):
         An array of options. The list of chat messages. Each message
         object should have:    - `role` (string): The message sender,
-        either \"user\" or \"assistant\".    - `content` (string): The
-        content of the message.
+        either \"user\" or \"assistant\".    - `content`: The content of
+        the message.
 
         `messages` is a list of dicts with keys:
 
         - role (a value equal to: "user", "assistant"; required)
 
-        - content (list | string; required)
+        - content (list of dicts; required)
+
+            `content` is a list of dicts with keys:
+
+            - type (a value equal to: "text", "attachment", "table", "graph"; required)
+
+            - props (dict; optional) | string | dict
 
     - new_message (dict; optional):
         Latest chat message that was appended to messages array.
@@ -106,7 +112,7 @@ class ChatComponent(Component):
         class_name=Component.UNDEFINED,
         persistence=Component.UNDEFINED,
         persistence_type=Component.UNDEFINED,
-        file_types=Component.UNDEFINED,
+        file_types_to_support=Component.UNDEFINED,
         **kwargs
     ):
         self._prop_names = [
@@ -114,7 +120,7 @@ class ChatComponent(Component):
             "assistant_bubble_style",
             "class_name",
             "container_style",
-            "file_types",
+            "file_types_to_support",
             "fill_height",
             "fill_width",
             "input_container_style",
@@ -134,7 +140,7 @@ class ChatComponent(Component):
             "assistant_bubble_style",
             "class_name",
             "container_style",
-            "file_types",
+            "file_types_to_support",
             "fill_height",
             "fill_width",
             "input_container_style",

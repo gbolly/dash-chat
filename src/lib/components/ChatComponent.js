@@ -15,12 +15,11 @@
 */
 
 import React, { useEffect, useRef, useState } from "react";
-import { EllipsisVertical, FileText } from "lucide-react";
-import Markdown from "react-markdown";
+import { EllipsisVertical } from "lucide-react";
 import PropTypes from "prop-types";
-import remarkGfm from "remark-gfm";
 
 import MessageInput from "../../private/ChatMessageInput";
+import renderMessageContent from "../../private/renderers";
 import TypingIndicatorDots from "../../private/DotsIndicator";
 import TypingIndicatorSpinner from "../../private/SpinnerIndicator";
 
@@ -72,7 +71,7 @@ const ChatComponent = ({
     class_name: className = "",
     persistence = false,
     persistence_type: persistenceType = "local",
-    file_types : fileTypes = "*/*",
+    file_types_to_support : fileTypes = "*/*",
 }) => {
     const userBubbleStyle = { ...defaultUserBubbleStyle, ...userBubbleStyleProp };
     const assistantBubbleStyle = { ...defaultAssistantBubbleStyle, ...assistantBubbleStyleProp };
@@ -195,7 +194,7 @@ const ChatComponent = ({
 
             setShowTyping(true);
             setCurrentMessage("");
-            setAttachment(null);
+            setAttachment("");
         }
     };
 
@@ -262,35 +261,7 @@ const ChatComponent = ({
                         return (
                             <div key={index} className={`chat-bubble ${message.role}`} style={bubbleStyle}>
                                 <div className="markdown-content">
-                                    {Array.isArray(message.content) ? (
-                                        message.content.map((item, i) => (
-                                            <div key={i} className="attachment-text-container">
-                                                {item.type === "text" && (
-                                                    <Markdown remarkPlugins={[remarkGfm]}>
-                                                        {item.text}
-                                                    </Markdown>
-                                                )}
-
-                                                {item.type === "attachment" && (
-                                                    item.fileName.match(/\.(jpeg|jpg|png|gif)$/i) ? (
-                                                        <img
-                                                            src={item.file}
-                                                            alt={item.fileName}
-                                                            style={{ maxWidth: "30%", borderRadius: "5px", paddingTop: "10px" }}
-                                                        />
-                                                    ) : (
-                                                        <a href={item.file} target="_blank" rel="noopener noreferrer">
-                                                            <FileText size={15} /> View {item.fileName}
-                                                        </a>
-                                                    )
-                                                )}
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <Markdown remarkPlugins={[remarkGfm]}>
-                                            {message.content}
-                                        </Markdown>
-                                    )}
+                                    {renderMessageContent(message.content)}
                                 </div>
                             </div>
                         );
@@ -331,14 +302,20 @@ ChatComponent.propTypes = {
     /**
      * An array of options. The list of chat messages. Each message object should have:
      *    - `role` (string): The message sender, either "user" or "assistant".
-     *    - `content` (string): The content of the message.
+     *    - `content`: The content of the message.
     */
     messages: PropTypes.arrayOf(
         PropTypes.shape({
             role: PropTypes.oneOf(["user", "assistant"]).isRequired,
             content: PropTypes.oneOfType([
-                PropTypes.array,
+                PropTypes.arrayOf(
+                    PropTypes.shape({
+                        type: PropTypes.oneOf(["text", "attachment", "table", "graph"]).isRequired,
+                        props: PropTypes.object,
+                    })
+                ),
                 PropTypes.string,
+                PropTypes.object,
             ]).isRequired,
         })
     ),
@@ -407,7 +384,7 @@ ChatComponent.propTypes = {
     /**
      * Comma separated type of files to accept in the attachment file input
     */
-    file_types: PropTypes.string,
+    file_types_to_support: PropTypes.string,
 };
 
 export default ChatComponent;

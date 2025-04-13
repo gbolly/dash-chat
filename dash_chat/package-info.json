@@ -28,8 +28,10 @@
   "license": "MIT",
   "dependencies": {
     "lucide-react": "^0.477.0",
+    "plotly.js": "^3.0.1",
     "ramda": "^0.26.1",
     "react-markdown": "^9.0.3",
+    "react-plotly.js": "^2.6.0",
     "remark-gfm": "^4.0.0"
   },
   "devDependencies": {

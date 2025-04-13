@@ -9,7 +9,7 @@ def test_render_chat_component(dash_duo):
     """Test chat component rendering, messaging functionality, and persistence."""
 
     # import and start the Dash app
-    app = import_app("usage")
+    app = import_app("usage.usage")
     dash_duo.start_server(app)
     input_box = dash_duo.wait_for_element_by_css_selector(
         "textarea.message-input-field"

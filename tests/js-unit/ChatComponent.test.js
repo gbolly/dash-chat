@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import ChatComponent from "../../src/lib/components/ChatComponent";
 
 describe("ChatComponent", () => {
+    global.URL.createObjectURL = jest.fn();
     const mockSetProps = jest.fn();
     Date.now = jest.fn(() => 1741822740027);
 
