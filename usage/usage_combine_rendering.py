@@ -53,7 +53,7 @@ def handle_chat(new_message, messages):
                             "layout": {"title": "Bar Chart Example", "autosize": True},
                         },
                         "config": {"displayModeBar": True},
-                        "responsive": True
+                        "responsive": True,
                     },
                 },
                 {

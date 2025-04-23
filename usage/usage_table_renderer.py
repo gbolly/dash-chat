@@ -1,6 +1,5 @@
 import dash
 from dash import callback, html, Input, Output, State
-import dash_bootstrap_components as dbc
 from dash_chat import ChatComponent
 
 

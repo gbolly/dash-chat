@@ -44,10 +44,10 @@ def handle_chat(new_message, messages):
                                 "name": "Sample Bar",
                             }
                         ],
-                        "layout": {"title": "Bar Chart Example", "autosize": True}
+                        "layout": {"title": "Bar Chart Example", "autosize": True},
                     },
                     "config": {"displaylogo": True, "displayModeBar": True},
-                    "responsive": True
+                    "responsive": True,
                 },
             },
         }
