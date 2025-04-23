@@ -107,9 +107,24 @@ app.layout = html.Div([
     ChatComponent(
         id="chat-component",
         messages=[],
-        file_types=".png,.jpg,.pdf,.doc"
+        input_type_to_accept=".png,.jpg,.pdf,.doc"
     )
 ])
+
+
+def decode_base64(data):
+    match = re.match(r"data:(.*?);base64,(.*)", data)
+    if match:
+        _, base64_data = match.groups()
+    else:
+        base64_data = data
+
+    missing_padding = len(base64_data) % 4
+    if missing_padding:
+        base64_data += "=" * (4 - missing_padding)
+
+    return base64.b64decode(base64_data)
+
 
 @callback(
     Output("chat-component", "messages"),
@@ -132,11 +147,13 @@ def handle_chat(new_message, messages):
                 file_name = item["fileName"]
 
                 if file_type.startswith("image/"):
+                    # https://github.com/openai/openai-python#vision
                     user_content.append(
                         {"type": "image_url", "image_url": {"url": file_path}}
                     )
                 else:
                     # other file types (PDF, DOCX, etc.)
+                    # https://github.com/openai/openai-python?tab=readme-ov-file#file-uploads
                     decoded_bytes = decode_base64(file_path)
                     uploaded_file = client.files.create(
                         file=(file_name, BytesIO(decoded_bytes), file_type),
@@ -266,20 +283,23 @@ Renders an image or a downloadable file preview.
     "content": {
         "type": "graph",
         "props": {
-            "data": [
-                {
-                    "x": [1, 2, 3],
-                    "y": [4, 1, 2],
-                    "type": "bar", "name": "Demo"
-                }
-            ],
-            "layout": {"title": "Bar Chart"},
-            "config": {"responsive": True},
+            "figure": {
+                "data": [
+                    {
+                        "x": [1, 2, 3],
+                        "y": [4, 1, 2],
+                        "type": "bar", "name": "Demo"
+                    }
+                ],
+                "layout": {"title": "Bar Chart"},
+            },
+            "config": {"displaylogo": True},
+            "responsive": True
         }
     }
 }
 ```
-Renders an interactive Plotly chart. The props object supports the arguments you would pass to a graph in Plotly.
+Renders an interactive Plotly graph equivalent to [`dcc.Graph`](https://dash.plotly.com/dash-core-components/graph). The props object supports most of the arguments you would pass to a [`dcc.Graph`](https://dash.plotly.com/dash-core-components/graph).
 
 #### Table
 ```python
@@ -287,12 +307,12 @@ Renders an interactive Plotly chart. The props object supports the arguments you
     "role": "assistant",
     "content": {
         "type": "table",
+        "header": ["Order ID", "Item", "Quantity", "Total"],
+        "data": [
+            ["#1021", "Apple iPhone", 1, "$799"],
+            ["#1022", "Samsung Galaxy", 2, "$1398"]
+        ]
         "props": {
-            "columns": ["Order ID", "Item", "Quantity", "Total"],
-            "data": [
-                ["#1021", "Apple iPhone", 1, "$799"],
-                ["#1022", "Samsung Galaxy", 2, "$1398"]
-            ]
             "striped": True,
             "bordered": True,
             "hover": True,
@@ -302,7 +322,7 @@ Renders an interactive Plotly chart. The props object supports the arguments you
     }
 }
 ```
-Renders an HTML table. It supports all the arguments as bootstrap table
+Renders an HTML table. The props object supports all the arguments you would pass to [`dbc.Table`](https://dash-bootstrap-components.opensource.faculty.ai/docs/components/table/) in dash-bootstrap-components.
 
 Multiple supported renderers can also be provided as the assistants' content:
 ```python
@@ -313,20 +333,24 @@ Multiple supported renderers can also be provided as the assistants' content:
         {
             "type": "graph",
             "props": {
-                "data": [{"x": [1, 2, 3], "y": [4, 1, 2], "type": "bar", "name": "Demo"}],
-                "layout": {"title": "Bar Chart"},
-                "config": {"responsive": True},
+                "figure": {
+                    "data": [{"x": [1, 2, 3], "y": [4, 1, 2], "type": "bar", "name": "Demo"}],
+                    "layout": {"title": "Bar Chart"},
+                }
+                "config": {},
+                "responsive": True
             },
         },
         {
             "type": "table",
+            "header": ["Order ID", "Item", "Quantity", "Total"],
+            "data": [
+                ["#1021", "iPhone 14", 1, "$799"],
+                ["#1022", "Galaxy S22", 2, "$1398"],
+                ["#1023", "Pixel 7", 1, "$599"],
+            ],
             "props": {
-                "columns": ["Order ID", "Item", "Quantity", "Total"],
-                "data": [
-                    ["#1021", "iPhone 14", 1, "$799"],
-                    ["#1022", "Galaxy S22", 2, "$1398"],
-                    ["#1023", "Pixel 7", 1, "$599"],
-                ],
+                "striped": True
             },
         },
     ]
@@ -355,7 +379,7 @@ For a complete example of how to setup dash apps and how to uses renderers see t
 | **class_name**                | `string`                  | `None`                         | Name to use as class attribute on the main chat container.                                    |
 | **persistence**               | `boolean`                 | `False`                        | Whether to store chat messages so that it can be persisted.                                   |
 | **persistence_type**          | `string`                  | `"local"`                      | Where chat messages will be stored for persistence. Options: `"local"` or `"session"`         |
-| **file_types**          | `string`                  | `"*/*"`                      | List of comma separated file types to support in the file input         |
+| **input_type_to_accept**          | `string`                  | `"*/*"`                | String or list of file types to support in the file input         |
 
 ## License
 

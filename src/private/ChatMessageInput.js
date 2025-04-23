@@ -33,7 +33,7 @@ const MessageInput = ({
     customStyles = null,
     inputComponentStyles = null,
     showTyping = false,
-    fileTypes,
+    accept,
 }) => {
     const fileInputRef = useRef(null);
     const [selectedFile, setSelectedFile] = useState(null);
@@ -120,7 +120,7 @@ const MessageInput = ({
                     type="file"
                     ref={fileInputRef}
                     style={{ display: "none" }}
-                    accept={fileTypes}
+                    accept={Array.isArray(accept) ? accept.join(",") : accept}
                     onChange={handleFileUpload}
                     data-testid="file-input"
                 />
@@ -175,9 +175,12 @@ MessageInput.propTypes = {
     */
     setAttachment: PropTypes.func,
     /**
-     * Comma separated supported file types.
+     * String or array of supported file types.
     */
-    fileTypes: PropTypes.string,
+    accept: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.arrayOf(PropTypes.string),
+    ]),
 };
 
 export default MessageInput;

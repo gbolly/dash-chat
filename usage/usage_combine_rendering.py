@@ -37,36 +37,43 @@ def handle_chat(new_message, messages):
         bot_response = {
             "role": "assistant",
             "content": [
-                {"type": "text", "text": "Here's a graph for you."},
+                {"type": "text", "text": "Here's a graph and table for you."},
                 {
                     "type": "graph",
                     "props": {
-                        "data": [
-                            {
-                                "x": [1, 2, 3],
-                                "y": [4, 1, 2],
-                                "type": "bar",
-                                "name": "Sample Bar",
-                            }
-                        ],
-                        "layout": {"title": "Bar Chart Example", "autosize": True},
-                        "config": {"responsive": True},
+                        "figure": {
+                            "data": [
+                                {
+                                    "x": [1, 2, 3],
+                                    "y": [4, 1, 2],
+                                    "type": "bar",
+                                    "name": "Sample Bar",
+                                }
+                            ],
+                            "layout": {"title": "Bar Chart Example", "autosize": True},
+                        },
+                        "config": {"displayModeBar": True},
+                        "responsive": True
                     },
                 },
                 {
                     "type": "table",
+                    "header": ["Order ID", "Item", "Quantity", "Total"],
+                    "data": [
+                        ["#1021", "Apple iPhone 14", 1, "$799"],
+                        ["#1022", "Samsung Galaxy S22", 2, "$1398"],
+                        ["#1023", "Google Pixel 7", 1, "$599"],
+                    ],
                     "props": {
-                        "columns": ["Order ID", "Item", "Quantity", "Total"],
-                        "data": [
-                            ["#1021", "Apple iPhone 14", 1, "$799"],
-                            ["#1022", "Samsung Galaxy S22", 2, "$1398"],
-                            ["#1023", "Google Pixel 7", 1, "$599"],
-                        ],
                         "striped": True,
                         "bordered": True,
                         "hover": True,
                         "responsive": True,
                         "size": "lg",
+                        "style": {
+                            "backgroundColor": "#f9f9f9",
+                            "fontSize": "14px",
+                        },
                     },
                 },
             ],

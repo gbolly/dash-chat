@@ -4,7 +4,7 @@ import dash_bootstrap_components as dbc
 from dash_chat import ChatComponent
 
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(__name__)
 
 app.layout = html.Div(
     [
@@ -38,18 +38,23 @@ def handle_chat(new_message, messages):
             "role": "assistant",
             "content": {
                 "type": "table",
+                "header": ["Order ID", "Item", "Quantity", "Total"],
+                "data": [
+                    ["#1021", "Apple iPhone 14", 1, "$799"],
+                    ["#1022", "Samsung Galaxy S22", 2, "$1398"],
+                    ["#1023", "Google Pixel 7", 1, "$599"],
+                ],
                 "props": {
-                    "columns": ["Order ID", "Item", "Quantity", "Total"],
-                    "data": [
-                        ["#1021", "Apple iPhone 14", 1, "$799"],
-                        ["#1022", "Samsung Galaxy S22", 2, "$1398"],
-                        ["#1023", "Google Pixel 7", 1, "$599"],
-                    ],
                     "striped": True,
                     "bordered": True,
                     "hover": True,
                     "responsive": True,
                     "size": "lg",
+                    "style": {
+                        "backgroundColor": "#f9f9f9",
+                        "fontSize": "14px",
+                        "color": "#333",
+                    },
                 },
             },
         }

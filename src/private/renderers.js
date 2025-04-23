@@ -1,8 +1,46 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { FileText } from "lucide-react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Plot from "react-plotly.js";
+
+const DashStyleGraph = ({
+  figure = {},
+  config = {},
+  style = {},
+  className = '',
+  animate = false,
+  animationOptions = {},
+  responsive = true,
+  useResizeHandler = false,
+  divId,
+  ...rest
+}) => {
+  const { data = [], layout = {}, frames = [] } = figure;
+  const finalConfig = { responsive, ...config };
+
+  return (
+    <Plot
+      data={data}
+      layout={layout}
+      frames={frames}
+      config={finalConfig}
+      revision={layout.revision}
+      animate={animate}
+      animation={animationOptions}
+      style={{
+        width: useResizeHandler ? '100%' : null,
+        height: useResizeHandler ? '100%' : null,
+        ...style,
+      }}
+      className={className}
+      divId={divId}
+      useResizeHandler={useResizeHandler}
+      {...rest}
+    />
+  );
+};
 
 const textRenderer = (item) => (
     <Markdown remarkPlugins={[remarkGfm]}>
@@ -36,47 +74,63 @@ const fileRenderer = (item) => {
 };
 
 const graphRenderer = (item) => {
+    const {
+        figure,
+        id,
+        config,
+        style,
+        class_name,
+        responsive,
+        revision,
+        animate,
+        animation_options
+    } = item.props;
     return (
-        <Plot
-            data={item.props.data}
-            layout={item.props.layout}
-            config={item.props.config}
-            style={item.props.style}
-            useResizeHandler
+        <DashStyleGraph
+            divId={id}
+            figure={figure}
+            config={config}
+            style={style}
+            className={class_name}
+            animate={animate}
+            animationOptions={animation_options}
+            responsive={responsive}
+            useResizeHandler={responsive ? true : false}
+            revision={revision}
         />
     );
 };
 
 const tableRenderer = (item, i) => {
+    const { data, header, props } = item;
     const {
-        columns,
-        data,
+        class_name: className,
         striped,
         bordered,
+        borderless,
         hover,
         responsive,
         size,
-        dark
-    } = item.props;
+        dark,
+        style,
+    } = props;
 
     const classList = ["table"];
+    if (className) {classList.push(className);}
     if (striped) {classList.push("table-striped");}
     if (bordered) {classList.push("table-bordered");}
+    if (borderless) {classList.push("table-borderless");}
     if (hover) {classList.push("table-hover");}
-    if (size === "sm") {
-        classList.push("table-sm");
-    } else if (size === "lg") {
-        classList.push("table-lg");
-    } else if (size === "md") {
-        classList.push("table-md");
-    }
+    if (size === "sm") {classList.push("table-sm");}
+    else if (size === "lg") {classList.push("table-lg");}
+    else if (size === "md") {classList.push("table-md");}
     if (dark) {classList.push("table-dark");}
 
     const table = (
-        <table key={i} className={classList.join(" ")}>
+        <table key={i} className={classList.join(" ")} style={style}>
             <thead>
                 <tr>
-                    {columns.map((col, idx) => (
+                    {header.map((col, idx) => (
                         <th key={idx}>{col}</th>
                     ))}
                 </tr>
@@ -152,6 +206,19 @@ const renderMessageContent = (content) => {
     }
 
     return null;
+};
+
+
+DashStyleGraph.propTypes = {
+  figure: PropTypes.object,
+  config: PropTypes.object,
+  style: PropTypes.object,
+  className: PropTypes.string,
+  animate: PropTypes.bool,
+  animationOptions: PropTypes.object,
+  responsive: PropTypes.bool,
+  useResizeHandler: PropTypes.bool,
+  divId: PropTypes.string,
 };
 
 export default renderMessageContent;

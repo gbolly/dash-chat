@@ -35,16 +35,19 @@ def handle_chat(new_message, messages):
             "content": {
                 "type": "graph",
                 "props": {
-                    "data": [
-                        {
-                            "x": [1, 2, 3],
-                            "y": [4, 1, 2],
-                            "type": "bar",
-                            "name": "Sample Bar",
-                        }
-                    ],
-                    "layout": {"title": "Bar Chart Example", "autosize": True},
-                    "config": {"responsive": True},
+                    "figure": {
+                        "data": [
+                            {
+                                "x": [1, 2, 3],
+                                "y": [4, 1, 2],
+                                "type": "bar",
+                                "name": "Sample Bar",
+                            }
+                        ],
+                        "layout": {"title": "Bar Chart Example", "autosize": True}
+                    },
+                    "config": {"displaylogo": True, "displayModeBar": True},
+                    "responsive": True
                 },
             },
         }
