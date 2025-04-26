@@ -20,7 +20,7 @@ app.layout = html.Div(
             persistence=True,
             persistence_type="local",
             input_placeholder="Message Dash",
-            file_types=".png,.jpg",
+            supported_input_file_types=[".png", ".jpg"],
         )
     ]
 )

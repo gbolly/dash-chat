@@ -91,8 +91,11 @@ In your dash callback, follow the OpenAI-style for uploading images with text.
 ![dash-chat-demo](https://github.com/gbolly/dash-chat/blob/main/dash-chat-demo.gif?raw=true)
 
 ```python
-import os
+import base64
 import dash
+import os
+import re
+from io import BytesIO
 from dash import callback, html, Input, Output, State
 from dash_chat import ChatComponent
 from openai import OpenAI
@@ -107,7 +110,7 @@ app.layout = html.Div([
     ChatComponent(
         id="chat-component",
         messages=[],
-        input_type_to_accept=".png,.jpg,.pdf,.doc"
+        supported_input_file_types=[".png", ".jpg", ".pdf", ".doc"]
     )
 ])
 
@@ -190,6 +193,7 @@ if __name__ == "__main__":
 ```
 
 ### Example 3
+`ChatComponent` is agnostic about which chatbot or AI assistant technology you're interacting with, so here's an example not using OpenAI
 
 ```python
 import time
@@ -250,7 +254,6 @@ ChatComponent(
 ### **Renderers (Graphs, Tables, Attachments & Text)**
 `dash-chat` supports rich content rendering by allowing messages to contain structured content types like graphs, tables, and images. You can render custom content by passing a structured list to the content field of a message.
 
-#### Supported Built-in Renderers
 #### Text
 ```python
 {
@@ -311,7 +314,7 @@ Renders an interactive Plotly graph equivalent to [`dcc.Graph`](https://dash.plo
         "data": [
             ["#1021", "Apple iPhone", 1, "$799"],
             ["#1022", "Samsung Galaxy", 2, "$1398"]
-        ]
+        ],
         "props": {
             "striped": True,
             "bordered": True,
@@ -322,8 +325,17 @@ Renders an interactive Plotly graph equivalent to [`dcc.Graph`](https://dash.plo
     }
 }
 ```
-Renders an HTML table. The props object supports all the arguments you would pass to [`dbc.Table`](https://dash-bootstrap-components.opensource.faculty.ai/docs/components/table/) in dash-bootstrap-components.
+Renders an HTML table. You provide the table by setting:
 
+- header: a list of strings representing the column names.
+    > Example: ["Order ID", "Item", "Quantity", "Total"]
+
+- data: a list of rows, where each row is a list of strings (or values) for the cells.
+    > Example: [["#1021", "Apple iPhone", 1, "$799"], ["#1022", "Samsung Galaxy", 2, "$1398"]]
+
+The props object supports all the arguments you would pass to [`dbc.Table`](https://dash-bootstrap-components.opensource.faculty.ai/docs/components/table/) in dash-bootstrap-components.
+
+#### Multiple renderers as a list at `"content"`
 Multiple supported renderers can also be provided as the assistants' content:
 ```python
 {
@@ -379,7 +391,7 @@ For a complete example of how to setup dash apps and how to uses renderers see t
 | **class_name**                | `string`                  | `None`                         | Name to use as class attribute on the main chat container.                                    |
 | **persistence**               | `boolean`                 | `False`                        | Whether to store chat messages so that it can be persisted.                                   |
 | **persistence_type**          | `string`                  | `"local"`                      | Where chat messages will be stored for persistence. Options: `"local"` or `"session"`         |
-| **input_type_to_accept**          | `string`                  | `"*/*"`                | String or list of file types to support in the file input         |
+| **supported_input_file_types**          | `string`                  | `"*/*"`                | String or list of file types to support in the file input         |
 
 ## License
 

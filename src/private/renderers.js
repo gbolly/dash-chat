@@ -95,7 +95,7 @@ const graphRenderer = (item) => {
             animate={animate}
             animationOptions={animation_options}
             responsive={responsive}
-            useResizeHandler={responsive ? true : false}
+            useResizeHandler={responsive ? responsive : false}
             revision={revision}
         />
     );

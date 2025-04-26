@@ -71,7 +71,7 @@ const ChatComponent = ({
     class_name: className = "",
     persistence = false,
     persistence_type: persistenceType = "local",
-    input_type_to_accept : accept = "*/*",
+    supported_input_file_types : accept = "*/*",
 }) => {
     const userBubbleStyle = { ...defaultUserBubbleStyle, ...userBubbleStyleProp };
     const assistantBubbleStyle = { ...defaultAssistantBubbleStyle, ...assistantBubbleStyleProp };
@@ -384,7 +384,7 @@ ChatComponent.propTypes = {
     /**
      * String or array of file types to accept in the attachment file input
     */
-    input_type_to_accept: PropTypes.oneOfType([
+    supported_input_file_types: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.arrayOf(PropTypes.string),
     ]),
