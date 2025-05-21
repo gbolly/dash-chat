@@ -55,13 +55,7 @@ class ChatComponent(Component):
 
         - role (a value equal to: "user", "assistant"; required)
 
-        - content (list of dicts; required)
-
-            `content` is a list of dicts with keys:
-
-            - type (a value equal to: "text", "attachment", "table", "graph"; required)
-
-            - props (dict; optional) | string | dict
+        - content (list | string | dict; required)
 
     - new_message (dict; optional):
         Latest chat message that was appended to messages array.

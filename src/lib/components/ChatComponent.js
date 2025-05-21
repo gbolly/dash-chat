@@ -309,10 +309,13 @@ ChatComponent.propTypes = {
             role: PropTypes.oneOf(["user", "assistant"]).isRequired,
             content: PropTypes.oneOfType([
                 PropTypes.arrayOf(
-                    PropTypes.shape({
-                        type: PropTypes.oneOf(["text", "attachment", "table", "graph"]).isRequired,
-                        props: PropTypes.object,
-                    })
+                    PropTypes.oneOf(
+                        PropTypes.shape({
+                            type: PropTypes.oneOf(["text", "attachment", "table", "graph"]).isRequired,
+                            props: PropTypes.object,
+                        }),
+                        PropTypes.object
+                    )
                 ),
                 PropTypes.string,
                 PropTypes.object,
