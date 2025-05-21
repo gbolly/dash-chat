@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Security
 
-## [0.2.1] - 2025-04-16
+## [0.3.0] - 2025-05-21
 
 - Support user file uploads in message content.
 - Fix indefinite loading when same message is sent twice.

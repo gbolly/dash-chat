@@ -21,7 +21,7 @@ A dash callback chat function is also required to handle how the messages are up
 ### Example 1
 Using **OpenAI** with dash-chat (requires the `openai` package - install it by running `pip install openai`)
 
-![dash-chat-demo](https://github.com/gbolly/dash-chat/blob/main/dash-chat-demo.gif?raw=true)
+![dash-chat-demo](https://github.com/gbolly/dash-chat/blob/main/demo-gifs/dash-chat-demo.gif?raw=true)
 
 ```python
 import os
@@ -88,7 +88,7 @@ To send local images and files along with a message to the AI assistant, the str
 ```
 In your dash callback, follow the OpenAI-style for uploading images with text.
 
-![dash-chat-demo](https://github.com/gbolly/dash-chat/blob/main/dash-chat-demo.gif?raw=true)
+![dash-chat-with-image-demo](https://github.com/gbolly/dash-chat/blob/main/demo-gifs/dash-image-demo.gif?raw=true)
 
 ```python
 import base64
