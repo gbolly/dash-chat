@@ -21,7 +21,7 @@ A dash callback chat function is also required to handle how the messages are up
 ### Example 1
 Using **OpenAI** with dash-chat (requires the `openai` package - install it by running `pip install openai`)
 
-![dash-chat-demo](https://github.com/gbolly/dash-chat/blob/main/dash-chat-demo.gif?raw=true)
+![dash-chat-demo](https://github.com/gbolly/dash-chat/blob/main/demo-gifs/dash-chat-demo.gif?raw=true)
 
 ```python
 import os
@@ -73,6 +73,127 @@ if __name__ == "__main__":
 ```
 
 ### Example 2
+To send local images and files along with a message to the AI assistant, the structure of `content` in the `messages` prop becomes a list of dictionary. The `content` takes the structure;
+
+```python
+    [
+        {"type": "text", "text": "Analyze image"},
+        {
+            "type": "attachment",
+            "file": <base64File>,
+            "fileName": <file.name>,
+            "fileType": <file.type>
+        },
+    ]
+```
+In your dash callback, follow the OpenAI-style for uploading images with text.
+
+![dash-chat-with-image-demo](https://github.com/gbolly/dash-chat/blob/main/demo-gifs/dash-image-demo.gif?raw=true)
+
+```python
+import base64
+import dash
+import os
+import re
+from io import BytesIO
+from dash import callback, html, Input, Output, State
+from dash_chat import ChatComponent
+from openai import OpenAI
+
+
+api_key = os.environ.get("OPENAI_API_KEY")
+client = OpenAI(api_key=api_key)
+
+app = dash.Dash(__name__)
+
+app.layout = html.Div([
+    ChatComponent(
+        id="chat-component",
+        messages=[],
+        supported_input_file_types=[".png", ".jpg", ".pdf", ".doc"]
+    )
+])
+
+
+def decode_base64(data):
+    match = re.match(r"data:(.*?);base64,(.*)", data)
+    if match:
+        _, base64_data = match.groups()
+    else:
+        base64_data = data
+
+    missing_padding = len(base64_data) % 4
+    if missing_padding:
+        base64_data += "=" * (4 - missing_padding)
+
+    return base64.b64decode(base64_data)
+
+
+@callback(
+    Output("chat-component", "messages"),
+    Input("chat-component", "new_message"),
+    State("chat-component", "messages"),
+    prevent_initial_call=True,
+)
+def handle_chat(new_message, messages):
+    if not new_message:
+        return messages
+
+    if isinstance(new_message["content"], list):
+        user_content = []
+        for item in new_message["content"]:
+            if item["type"] == "text":
+                user_content.append({"type": "text", "text": item["text"]})
+            elif item["type"] == "attachment":
+                file_type = item["fileType"]
+                file_path = item["file"]
+                file_name = item["fileName"]
+
+                if file_type.startswith("image/"):
+                    # https://github.com/openai/openai-python#vision
+                    user_content.append(
+                        {"type": "image_url", "image_url": {"url": file_path}}
+                    )
+                else:
+                    # other file types (PDF, DOCX, etc.)
+                    # https://github.com/openai/openai-python?tab=readme-ov-file#file-uploads
+                    decoded_bytes = decode_base64(file_path)
+                    uploaded_file = client.files.create(
+                        file=(file_name, BytesIO(decoded_bytes), file_type),
+                        purpose="user_data"
+                    )
+                    user_content.append({
+                        "type": "text",
+                        "text": f"File '{file_name}' uploaded. ID: {uploaded_file.id}",
+                    })
+        updated_messages = messages + [{"role": "user", "content": user_content}]
+    else:
+        updated_messages = messages + [new_message]
+
+    if new_message["role"] == "user":
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=updated_messages,
+            temperature=1.0,
+            max_tokens=150,
+        )
+
+        bot_response = {
+            "role": "assistant",
+            "content": response.choices[0].message.content.strip(),
+        }
+
+        return updated_messages + [bot_response]
+
+    return updated_messages
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
+```
+
+### Example 3
+`ChatComponent` is agnostic about which chatbot or AI assistant technology you're interacting with, so here's an example not using OpenAI
 
 ```python
 import time
@@ -130,6 +251,125 @@ ChatComponent(
 )
 ```
 
+### **Renderers (Graphs, Tables, Attachments & Text)**
+`dash-chat` supports rich content rendering by allowing messages to contain structured content types like graphs, tables, and images. You can render custom content by passing a structured list to the content field of a message.
+
+#### Text
+```python
+{
+    "role": "assistant",
+    "content": {
+        "type": "text",
+        "text": "This will be rendered as a markdown message"
+    },
+}
+```
+
+#### Attachments (Images & Files)
+```python
+{
+    "role": "assistant",
+    "content": {
+        "type": "attachment",
+        "file": "data:image/png;base64,...",
+        "fileName": "example.png",
+        "fileType": "image/png"
+    }
+}
+```
+Renders an image or a downloadable file preview.
+
+#### Graph
+```python
+{
+    "role": "assistant",
+    "content": {
+        "type": "graph",
+        "props": {
+            "figure": {
+                "data": [
+                    {
+                        "x": [1, 2, 3],
+                        "y": [4, 1, 2],
+                        "type": "bar", "name": "Demo"
+                    }
+                ],
+                "layout": {"title": "Bar Chart"},
+            },
+            "config": {"displaylogo": True},
+            "responsive": True
+        }
+    }
+}
+```
+Renders an interactive Plotly graph equivalent to [`dcc.Graph`](https://dash.plotly.com/dash-core-components/graph). The props object supports most of the arguments you would pass to a [`dcc.Graph`](https://dash.plotly.com/dash-core-components/graph).
+
+#### Table
+```python
+{
+    "role": "assistant",
+    "content": {
+        "type": "table",
+        "header": ["Order ID", "Item", "Quantity", "Total"],
+        "data": [
+            ["#1021", "Apple iPhone", 1, "$799"],
+            ["#1022", "Samsung Galaxy", 2, "$1398"]
+        ],
+        "props": {
+            "striped": True,
+            "bordered": True,
+            "hover": True,
+            "responsive": True,
+            "size": "lg"
+        }
+    }
+}
+```
+Renders an HTML table. You provide the table by setting:
+
+- header: a list of strings representing the column names.
+    > Example: ["Order ID", "Item", "Quantity", "Total"]
+
+- data: a list of rows, where each row is a list of strings (or values) for the cells.
+    > Example: [["#1021", "Apple iPhone", 1, "$799"], ["#1022", "Samsung Galaxy", 2, "$1398"]]
+
+The props object supports all the arguments you would pass to [`dbc.Table`](https://dash-bootstrap-components.opensource.faculty.ai/docs/components/table/) in dash-bootstrap-components.
+
+#### Multiple renderers as a list at `"content"`
+Multiple supported renderers can also be provided as the assistants' content:
+```python
+{
+    "role": "assistant",
+    "content": [
+        {"type": "text", "text": "Here's a bar chart of your data."},
+        {
+            "type": "graph",
+            "props": {
+                "figure": {
+                    "data": [{"x": [1, 2, 3], "y": [4, 1, 2], "type": "bar", "name": "Demo"}],
+                    "layout": {"title": "Bar Chart"},
+                }
+                "config": {},
+                "responsive": True
+            },
+        },
+        {
+            "type": "table",
+            "header": ["Order ID", "Item", "Quantity", "Total"],
+            "data": [
+                ["#1021", "iPhone 14", 1, "$799"],
+                ["#1022", "Galaxy S22", 2, "$1398"],
+                ["#1023", "Pixel 7", 1, "$599"],
+            ],
+            "props": {
+                "striped": True
+            },
+        },
+    ]
+}
+```
+For a complete example of how to setup dash apps and how to uses renderers see the `usage` folder.
+
 ### **Props**
 
 `ChatComponent` can be configured with the following properties:
@@ -151,6 +391,7 @@ ChatComponent(
 | **class_name**                | `string`                  | `None`                         | Name to use as class attribute on the main chat container.                                    |
 | **persistence**               | `boolean`                 | `False`                        | Whether to store chat messages so that it can be persisted.                                   |
 | **persistence_type**          | `string`                  | `"local"`                      | Where chat messages will be stored for persistence. Options: `"local"` or `"session"`         |
+| **supported_input_file_types**          | `string`                  | `"*/*"`                | String or list of file types to support in the file input         |
 
 ## License
 

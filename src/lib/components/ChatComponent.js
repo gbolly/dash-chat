@@ -15,11 +15,11 @@
 */
 
 import React, { useEffect, useRef, useState } from "react";
-import Markdown from "react-markdown";
+import { EllipsisVertical } from "lucide-react";
 import PropTypes from "prop-types";
-import remarkGfm from "remark-gfm";
 
 import MessageInput from "../../private/ChatMessageInput";
+import renderMessageContent from "../../private/renderers";
 import TypingIndicatorDots from "../../private/DotsIndicator";
 import TypingIndicatorSpinner from "../../private/SpinnerIndicator";
 
@@ -62,7 +62,7 @@ const ChatComponent = ({
     typing_indicator: typingIndicator = "dots",
     input_container_style: inputContainerStyle = null,
     input_text_style: inputTextStyle = null,
-    setProps = () => { },
+    setProps = () => {},
     fill_height: fillHeight = true,
     fill_width: fillWidth = true,
     user_bubble_style: userBubbleStyleProp = {},
@@ -71,10 +71,12 @@ const ChatComponent = ({
     class_name: className = "",
     persistence = false,
     persistence_type: persistenceType = "local",
+    supported_input_file_types : accept = "*/*",
 }) => {
     const userBubbleStyle = { ...defaultUserBubbleStyle, ...userBubbleStyleProp };
     const assistantBubbleStyle = { ...defaultAssistantBubbleStyle, ...assistantBubbleStyleProp };
     const [currentMessage, setCurrentMessage] = useState("");
+    const [attachment, setAttachment] = useState("");
     const [localMessages, setLocalMessages] = useState([]);
     const [showTyping, setShowTyping] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -116,7 +118,7 @@ const ChatComponent = ({
     useEffect(() => {
         if (messages.length > 0) {
             const lastMsg = messages.slice(-1).pop();
-            if (lastMsg?.role === "assistant" && showTyping) {
+            if (lastMsg?.role === "assistant") {
                 setShowTyping(false);
                 setLocalMessages((prevMessages) => [...prevMessages, lastMsg]);
             } else {
@@ -149,9 +151,35 @@ const ChatComponent = ({
         setCurrentMessage(e.target.value);
     };
 
-    const handleSendMessage = () => {
-        if (currentMessage.trim()) {
-            const newMessage = { role: "user", content: currentMessage };
+    const convertFileToBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = (error) => reject(error);
+        });
+    };
+
+    const handleSendMessage = async () => {
+        if (currentMessage.trim() || attachment) {
+            let content;
+
+            if (attachment) {
+                const base64File = await convertFileToBase64(attachment);
+                content = [
+                    { type: "text", text: currentMessage.trim() },
+                    {
+                        type: "attachment",
+                        file: base64File,
+                        fileName: attachment.name,
+                        fileType: attachment.type
+                    },
+                ];
+            } else {
+                content = currentMessage.trim();
+            }
+
+            const newMessage = { role: "user", content, id: Date.now() };
             setLocalMessages((prevMessages) => {
                 const updatedMessages = [...prevMessages, newMessage];
                 if (persistence) {
@@ -166,6 +194,7 @@ const ChatComponent = ({
 
             setShowTyping(true);
             setCurrentMessage("");
+            setAttachment("");
         }
     };
 
@@ -208,7 +237,7 @@ const ChatComponent = ({
                 <div className="actionBtnContainer" ref={dropdownRef}>
                     <div className="dropdown">
                         <button className="dotsButton" onClick={() => setDropdownOpen(!dropdownOpen)} aria-label="clear">
-                            &#x22EE;
+                            <EllipsisVertical size={24} />
                         </button>
                         {dropdownOpen && (
                             <div className="dropdownMenu">
@@ -230,27 +259,12 @@ const ChatComponent = ({
                         }
                         const bubbleStyle = message.role === "user" ? userBubbleStyle : assistantBubbleStyle;
                         return (
-                            <div
-                                key={index}
-                                className={`chat-bubble ${message.role}`}
-                                style={bubbleStyle}
-                            >
+                            <div key={index} className={`chat-bubble ${message.role}`} style={bubbleStyle}>
                                 <div className="markdown-content">
-                                    <Markdown
-                                        remarkPlugins={[remarkGfm]}
-                                        components={{
-                                            a: ({ href, children }) => (
-                                                <a href={href} target="_blank" rel="noopener noreferrer">
-                                                    {children}
-                                                </a>
-                                            ),
-                                        }}
-                                    >
-                                        {message.content}
-                                    </Markdown>
+                                    {renderMessageContent(message.content)}
                                 </div>
                             </div>
-                        )
+                        );
                     })
                 )}
                 {showTyping && (
@@ -270,6 +284,8 @@ const ChatComponent = ({
                     inputComponentStyles={{ ...inputFieldStyle, ...inputTextStyle }}
                     placeholder={inputPlaceholder}
                     showTyping={showTyping}
+                    setAttachment={setAttachment}
+                    accept={accept}
                 />
             </div>
         </div>
@@ -286,12 +302,24 @@ ChatComponent.propTypes = {
     /**
      * An array of options. The list of chat messages. Each message object should have:
      *    - `role` (string): The message sender, either "user" or "assistant".
-     *    - `content` (string): The content of the message.
+     *    - `content`: The content of the message.
     */
     messages: PropTypes.arrayOf(
         PropTypes.shape({
             role: PropTypes.oneOf(["user", "assistant"]).isRequired,
-            content: PropTypes.string.isRequired,
+            content: PropTypes.oneOfType([
+                PropTypes.arrayOf(
+                    PropTypes.oneOf(
+                        PropTypes.shape({
+                            type: PropTypes.oneOf(["text", "attachment", "table", "graph"]).isRequired,
+                            props: PropTypes.object,
+                        }),
+                        PropTypes.object
+                    )
+                ),
+                PropTypes.string,
+                PropTypes.object,
+            ]).isRequired,
         })
     ),
     /**
@@ -356,6 +384,13 @@ ChatComponent.propTypes = {
      * Where persisted messages will be stored
     */
     persistence_type: PropTypes.oneOf(["local", "session"]),
+    /**
+     * String or array of file types to accept in the attachment file input
+    */
+    supported_input_file_types: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.arrayOf(PropTypes.string),
+    ]),
 };
 
 export default ChatComponent;

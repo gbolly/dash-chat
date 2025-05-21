@@ -1,3 +1,4 @@
 # dash is required to call `build:py`
 dash[dev]>=2.0.0
 openai==1.55.3
+chromedriver-binary-auto==0.3.1

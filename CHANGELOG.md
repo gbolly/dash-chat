@@ -19,6 +19,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Security
 
+## [0.3.0] - 2025-05-21
+
+- Support user file uploads in message content.
+- Fix indefinite loading when same message is sent twice.
+- Implement renderers to support varying assistant message content
+
 ## [0.2.0] - 2025-02-12
 
 - Support text markdown formats.

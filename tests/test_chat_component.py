@@ -1,3 +1,4 @@
+import os
 import chromedriver_binary  # noqa
 import pytest
 from dash.testing.application_runners import import_app
@@ -8,9 +9,11 @@ def test_render_chat_component(dash_duo):
     """Test chat component rendering, messaging functionality, and persistence."""
 
     # import and start the Dash app
-    app = import_app("usage")
+    app = import_app("usage.usage")
     dash_duo.start_server(app)
-    input_box = dash_duo.wait_for_element_by_css_selector("input[type='text']")
+    input_box = dash_duo.wait_for_element_by_css_selector(
+        "textarea.message-input-field"
+    )
     send_button = dash_duo.find_element(".message-input-button")
     input_box.clear()
     input_box.send_keys("Hello!")
@@ -47,3 +50,18 @@ def test_render_chat_component(dash_duo):
         "Hello John Doe.",
     )
     assert bot_response is not None
+
+    # Test 6: verify image shows up in chat
+    file_input = dash_duo.wait_for_element_by_css_selector("input[type='file']")
+    test_image_path = os.path.abspath("tests/assets/test-image.png")
+    file_input.send_keys(test_image_path)
+    file_preview = dash_duo.wait_for_element_by_css_selector(".file-preview-image")
+    assert file_preview.is_displayed(), "Image preview should be visible after upload"
+    send_button = dash_duo.find_element(".message-input-button")
+    send_button.click()
+    uploaded_message = dash_duo.wait_for_element_by_css_selector(
+        ".chat-bubble:nth-child(5)"
+    )
+    assert (
+        uploaded_message.is_displayed()
+    ), "Uploaded image should be displayed in the chat"

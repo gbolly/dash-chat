@@ -20,7 +20,7 @@ class ChatComponent(Component):
         in an app.
 
     - assistant_bubble_style (dict; optional):
-        Css styles to customize the assistant message bubbles.
+        Css styles to customize the assistant message bubble.
 
     - class_name (string; default ""):
         Name for the class attribute to be added to the chat container.
@@ -48,14 +48,14 @@ class ChatComponent(Component):
     - messages (list of dicts; optional):
         An array of options. The list of chat messages. Each message
         object should have:    - `role` (string): The message sender,
-        either \"user\" or \"assistant\".    - `content` (string): The
-        content of the message.
+        either \"user\" or \"assistant\".    - `content`: The content of
+        the message.
 
         `messages` is a list of dicts with keys:
 
         - role (a value equal to: "user", "assistant"; required)
 
-        - content (string; required)
+        - content (list | string | dict; required)
 
     - new_message (dict; optional):
         Latest chat message that was appended to messages array.
@@ -65,6 +65,10 @@ class ChatComponent(Component):
 
     - persistence_type (a value equal to: "local", "session"; default "local"):
         Where persisted messages will be stored.
+
+    - supported_input_file_types (string | list of strings; default "*/*"):
+        String or array of file types to accept in the attachment file
+        input.
 
     - theme (string; default "light"):
         Theme for the chat interface. Default is \"light\". Use \"dark\"
@@ -76,7 +80,7 @@ class ChatComponent(Component):
         spinner animation.
 
     - user_bubble_style (dict; optional):
-        Css styles to customize the user message bubbles."""
+        Css styles to customize the user message bubble."""
 
     _children_props = []
     _base_nodes = ["children"]
@@ -102,6 +106,7 @@ class ChatComponent(Component):
         class_name=Component.UNDEFINED,
         persistence=Component.UNDEFINED,
         persistence_type=Component.UNDEFINED,
+        supported_input_file_types=Component.UNDEFINED,
         **kwargs
     ):
         self._prop_names = [
@@ -118,6 +123,7 @@ class ChatComponent(Component):
             "new_message",
             "persistence",
             "persistence_type",
+            "supported_input_file_types",
             "theme",
             "typing_indicator",
             "user_bubble_style",
@@ -137,6 +143,7 @@ class ChatComponent(Component):
             "new_message",
             "persistence",
             "persistence_type",
+            "supported_input_file_types",
             "theme",
             "typing_indicator",
             "user_bubble_style",

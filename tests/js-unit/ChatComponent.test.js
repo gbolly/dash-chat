@@ -3,10 +3,13 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import ChatComponent from "../../src/lib/components/ChatComponent";
 
 describe("ChatComponent", () => {
+    global.URL.createObjectURL = jest.fn();
     const mockSetProps = jest.fn();
+    Date.now = jest.fn(() => 1741822740027);
 
     beforeAll(() => {
         window.HTMLElement.prototype.scrollIntoView = jest.fn();
+        global.URL.createObjectURL = jest.fn(() => "mocked-file-url");
     });    
 
     const defaultProps = {
@@ -58,7 +61,7 @@ describe("ChatComponent", () => {
         const { rerender } = render(<ChatComponent {...defaultProps} />);
         const inputField = screen.getByRole("textbox");
         fireEvent.change(inputField, { target: { value: "This is a test message" } });
-        const sendButton = screen.getByRole("button", { name: /send/i });
+        const sendButton = screen.getByTestId("send-button");
         fireEvent.click(sendButton);
     
         await waitFor(() => {
@@ -81,17 +84,50 @@ describe("ChatComponent", () => {
         });
     });
 
+    it("allows the user to attach a file", async () => {
+        render(<ChatComponent setProps={mockSetProps} />);
+
+        const fileInput = screen.getByTestId("file-input");
+        const fileUploadButton = screen.getByTestId("file-upload-button");
+        const testFile = new File(["dummy content"], "test-file.pdf", { type: "application/pdf" });
+        fireEvent.click(fileUploadButton);
+        fireEvent.change(fileInput, { target: { files: [testFile] } });
+
+        expect(screen.getByText("test-file.pdf")).toBeInTheDocument();
+    });
+
+    it("allows the user to remove an attached file", () => {
+        render(<ChatComponent setProps={mockSetProps} />);
+        const testFile = new File(["dummy image"], "image.png", { type: "image/png" });
+        const fileInput = screen.getByTestId("file-input");
+        fireEvent.change(fileInput, { target: { files: [testFile] } });
+
+        // Expect file preview to appear
+        expect(screen.getByAltText("Preview")).toBeInTheDocument();
+
+        // Click remove button
+        const removeFileButton = screen.getByTestId("file-remove-button");
+        fireEvent.click(removeFileButton);
+
+        // Expect the file preview to be removed
+        expect(screen.queryByAltText("Preview")).not.toBeInTheDocument();
+    });
+
     it("allows the user to type a message and send it", () => {
         render(<ChatComponent {...defaultProps} />);
         const inputField = screen.getByRole("textbox");
-        const sendButton = screen.getByRole("button", { name: /send/i });
+        const sendButton = screen.getByTestId("send-button");
 
         fireEvent.change(inputField, { target: { value: "This is a test message" } });
         expect(inputField.value).toBe("This is a test message");
 
+        expect(sendButton).not.toHaveClass("disabled");
+        expect(sendButton).not.toBeDisabled();
+    
         fireEvent.click(sendButton);
+
         expect(mockSetProps).toHaveBeenCalledWith({
-            new_message: { role: "user", content: "This is a test message" },
+            new_message: { role: "user", content: "This is a test message", id: 1741822740027 },
         });
     });
 
@@ -136,10 +172,10 @@ describe("ChatComponent", () => {
 
     it("saves messages to localStorage when persistence is enabled", () => {
         const id = "chat-component";
-        const messages = [{ role: "user", content: "Hello!" }];
+        const messages = [{ role: "user", content: "Hello!", id: 1741822740027 }];
         render(<ChatComponent id={id} persistence={true} persistence_type="local" />);
         const inputField = screen.getByRole("textbox");
-        const sendButton = screen.getByRole("button", { name: /send/i });
+        const sendButton = screen.getByTestId("send-button");
 
         fireEvent.change(inputField, { target: { value: "Hello!" } });
         fireEvent.click(sendButton);
