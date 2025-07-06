@@ -72,6 +72,21 @@ const ChatComponent = ({
     persistence = false,
     persistence_type: persistenceType = "local",
     supported_input_file_types : accept = "*/*",
+    file_attachment_button_config = {
+        show: true,
+        label: "Attach File",
+        icon: "paperclip",
+        icon_position: "only",
+        style: {},
+        className: "",
+    },
+    send_button_config = {
+        label: "Send",
+        icon: "paper-plane",
+        icon_position: "only",
+        style: {},
+        className: "",
+    }
 }) => {
     const userBubbleStyle = { ...defaultUserBubbleStyle, ...userBubbleStyleProp };
     const assistantBubbleStyle = { ...defaultAssistantBubbleStyle, ...assistantBubbleStyleProp };
@@ -286,6 +301,8 @@ const ChatComponent = ({
                     showTyping={showTyping}
                     setAttachment={setAttachment}
                     accept={accept}
+                    file_attachment_button_config={file_attachment_button_config}
+                    send_button_config={send_button_config}
                 />
             </div>
         </div>
@@ -391,6 +408,29 @@ ChatComponent.propTypes = {
         PropTypes.string,
         PropTypes.arrayOf(PropTypes.string),
     ]),
+    /**
+     * Configuration for the file attachment button in the input field.
+     * Allows customization of appearance and behavior.
+    */
+    file_attachment_button_config: PropTypes.shape({
+        show: PropTypes.bool,
+        label: PropTypes.string,
+        icon: PropTypes.oneOf(["paper-plane-horizontal", "paper-plane", "folder", "file", "paperclip"]),
+        icon_position: PropTypes.oneOf(["left", "right", "only"]),
+        style: PropTypes.object,
+        className: PropTypes.string,
+    }),
+    /**
+     * Configuration for the send button in the input field.
+     * Allows customization of appearance and behavior.
+    */
+    send_button_config: PropTypes.shape({
+        label: PropTypes.string,
+        icon: PropTypes.oneOf(["paper-plane-horizontal", "paper-plane", "folder", "file", "paperclip"]),
+        icon_position: PropTypes.oneOf(["left", "right", "only"]),
+        style: PropTypes.object,
+        className: PropTypes.string,
+    }),
 };
 
 export default ChatComponent;

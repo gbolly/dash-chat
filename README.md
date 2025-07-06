@@ -392,6 +392,17 @@ For a complete example of how to setup dash apps and how to uses renderers see t
 | **persistence**               | `boolean`                 | `False`                        | Whether to store chat messages so that it can be persisted.                                   |
 | **persistence_type**          | `string`                  | `"local"`                      | Where chat messages will be stored for persistence. Options: `"local"` or `"session"`         |
 | **supported_input_file_types**          | `string`                  | `"*/*"`                | String or list of file types to support in the file input         |
+| **file_attachment_button_config** | `dict` |  `{"show": true, "label": "Attach File", "icon": "paperclip", "icon_position": "only", "style": {}, "className": ""}` | Configuration for the file attachment button.
+| **send_button_config** | `dict` |  `{"label": "Send", "icon": "paper-plane", "icon_position": "only", "style": {}, "className": ""}` | Configuration for the send button.
+
+```
+- show: Whether to show the button.
+- label: Text label for the button.
+- icon: Icon name ("paper-plane-horizontal", "paper-plane", "folder", "file", "paperclip").
+- icon_position: Position of the icon relative to text ("left", "right", "only").
+- style: Custom styles for the button.
+- className: Additional class names for styling.
+```
 
 ## License
 

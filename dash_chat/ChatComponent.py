@@ -5,151 +5,127 @@ from dash.development.base_component import Component, _explicitize_args
 
 class ChatComponent(Component):
     """A ChatComponent component.
-    ChatComponent - A React-based chat interface with customizable styles and typing indicators.
-    * This component provides a chat interface with support for:
-    - Displaying messages exchanged between 2 users typically a user and an assistant.
-    - Customizable themes and styles for the chat UI.
-    - Typing indicators for both the user and assistant.
-    - Integration with Dash via the `setProps` callback for state management.
+ChatComponent - A React-based chat interface with customizable styles and typing indicators.
+* This component provides a chat interface with support for:
+- Displaying messages exchanged between 2 users typically a user and an assistant.
+- Customizable themes and styles for the chat UI.
+- Typing indicators for both the user and assistant.
+- Integration with Dash via the `setProps` callback for state management.
 
-    Keyword arguments:
+Keyword arguments:
 
-    - id (string; optional):
-        The ID of this component, used to identify dash components in
-        callbacks. The ID needs to be unique across all of the components
-        in an app.
+- id (string; optional):
+    The ID of this component, used to identify dash components in
+    callbacks. The ID needs to be unique across all of the components
+    in an app.
 
-    - assistant_bubble_style (dict; optional):
-        Css styles to customize the assistant message bubble.
+- assistant_bubble_style (dict; optional):
+    Css styles to customize the assistant message bubble.
 
-    - class_name (string; default ""):
-        Name for the class attribute to be added to the chat container.
+- class_name (string; default ""):
+    Name for the class attribute to be added to the chat container.
 
-    - container_style (dict; optional):
-        Inline css styles to customize the chat container.
+- container_style (dict; optional):
+    Inline css styles to customize the chat container.
 
-    - fill_height (boolean; default True):
-        Whether to vertically fill the screen with the chat container. If
-        False, centers and constrains container to a maximum height.
+- file_attachment_button_config (dict; default {    show: True,    label: "Attach File",    icon: "paperclip",    icon_position: "only",    style: {},    className: "",}):
+    Configuration for the file attachment button in the input field.
+    Allows customization of appearance and behavior.
 
-    - fill_width (boolean; default True):
-        Whether to horizontally fill the screen with the chat container.
-        If False, centers and constrains container to a maximum width.
+    `file_attachment_button_config` is a dict with keys:
 
-    - input_container_style (dict; optional):
-        Inline styles for the container holding the message input field.
+    - show (boolean; optional)
 
-    - input_placeholder (string; default ""):
-        Placeholder input to bne used in the input field.
+    - label (string; optional)
 
-    - input_text_style (dict; optional):
-        Inline styles for the message input field itself.
+    - icon (a value equal to: "paper-plane-horizontal", "paper-plane", "folder", "file", "paperclip"; optional)
 
-    - messages (list of dicts; optional):
-        An array of options. The list of chat messages. Each message
-        object should have:    - `role` (string): The message sender,
-        either \"user\" or \"assistant\".    - `content`: The content of
-        the message.
+    - icon_position (a value equal to: "left", "right", "only"; optional)
 
-        `messages` is a list of dicts with keys:
+    - style (dict; optional)
 
-        - role (a value equal to: "user", "assistant"; required)
+    - className (string; optional)
 
-        - content (list | string | dict; required)
+- fill_height (boolean; default True):
+    Whether to vertically fill the screen with the chat container. If
+    False, centers and constrains container to a maximum height.
 
-    - new_message (dict; optional):
-        Latest chat message that was appended to messages array.
+- fill_width (boolean; default True):
+    Whether to horizontally fill the screen with the chat container.
+    If False, centers and constrains container to a maximum width.
 
-    - persistence (boolean; default False):
-        Whether messages should be stored for persistence.
+- input_container_style (dict; optional):
+    Inline styles for the container holding the message input field.
 
-    - persistence_type (a value equal to: "local", "session"; default "local"):
-        Where persisted messages will be stored.
+- input_placeholder (string; default ""):
+    Placeholder input to bne used in the input field.
 
-    - supported_input_file_types (string | list of strings; default "*/*"):
-        String or array of file types to accept in the attachment file
-        input.
+- input_text_style (dict; optional):
+    Inline styles for the message input field itself.
 
-    - theme (string; default "light"):
-        Theme for the chat interface. Default is \"light\". Use \"dark\"
-        for a dark mode appearance.
+- messages (list of dicts; optional):
+    An array of options. The list of chat messages. Each message
+    object should have:    - `role` (string): The message sender,
+    either \"user\" or \"assistant\".    - `content`: The content of
+    the message.
 
-    - typing_indicator (a value equal to: "dots", "spinner"; default "dots"):
-        The type of typing indicator to display. Options are:    -
-        `\"dots\"`: Displays animated dots.    - `\"spinner\"`: Displays a
-        spinner animation.
+    `messages` is a list of dicts with keys:
 
-    - user_bubble_style (dict; optional):
-        Css styles to customize the user message bubble."""
+    - role (a value equal to: "user", "assistant"; required)
 
+    - content (list | string | dict; required)
+
+- new_message (dict; optional):
+    Latest chat message that was appended to messages array.
+
+- persistence (boolean; default False):
+    Whether messages should be stored for persistence.
+
+- persistence_type (a value equal to: "local", "session"; default "local"):
+    Where persisted messages will be stored.
+
+- send_button_config (dict; default {    label: "Send",    icon: "paper-plane",    icon_position: "only",    style: {},    className: "",}):
+    Configuration for the send button in the input field. Allows
+    customization of appearance and behavior.
+
+    `send_button_config` is a dict with keys:
+
+    - label (string; optional)
+
+    - icon (a value equal to: "paper-plane-horizontal", "paper-plane", "folder", "file", "paperclip"; optional)
+
+    - icon_position (a value equal to: "left", "right", "only"; optional)
+
+    - style (dict; optional)
+
+    - className (string; optional)
+
+- supported_input_file_types (string | list of strings; default "*/*"):
+    String or array of file types to accept in the attachment file
+    input.
+
+- theme (string; default "light"):
+    Theme for the chat interface. Default is \"light\". Use \"dark\"
+    for a dark mode appearance.
+
+- typing_indicator (a value equal to: "dots", "spinner"; default "dots"):
+    The type of typing indicator to display. Options are:    -
+    `\"dots\"`: Displays animated dots.    - `\"spinner\"`: Displays a
+    spinner animation.
+
+- user_bubble_style (dict; optional):
+    Css styles to customize the user message bubble."""
     _children_props = []
-    _base_nodes = ["children"]
-    _namespace = "dash_chat"
-    _type = "ChatComponent"
-
+    _base_nodes = ['children']
+    _namespace = 'dash_chat'
+    _type = 'ChatComponent'
     @_explicitize_args
-    def __init__(
-        self,
-        id=Component.UNDEFINED,
-        messages=Component.UNDEFINED,
-        theme=Component.UNDEFINED,
-        container_style=Component.UNDEFINED,
-        typing_indicator=Component.UNDEFINED,
-        new_message=Component.UNDEFINED,
-        input_container_style=Component.UNDEFINED,
-        input_text_style=Component.UNDEFINED,
-        fill_height=Component.UNDEFINED,
-        fill_width=Component.UNDEFINED,
-        user_bubble_style=Component.UNDEFINED,
-        assistant_bubble_style=Component.UNDEFINED,
-        input_placeholder=Component.UNDEFINED,
-        class_name=Component.UNDEFINED,
-        persistence=Component.UNDEFINED,
-        persistence_type=Component.UNDEFINED,
-        supported_input_file_types=Component.UNDEFINED,
-        **kwargs
-    ):
-        self._prop_names = [
-            "id",
-            "assistant_bubble_style",
-            "class_name",
-            "container_style",
-            "fill_height",
-            "fill_width",
-            "input_container_style",
-            "input_placeholder",
-            "input_text_style",
-            "messages",
-            "new_message",
-            "persistence",
-            "persistence_type",
-            "supported_input_file_types",
-            "theme",
-            "typing_indicator",
-            "user_bubble_style",
-        ]
-        self._valid_wildcard_attributes = []
-        self.available_properties = [
-            "id",
-            "assistant_bubble_style",
-            "class_name",
-            "container_style",
-            "fill_height",
-            "fill_width",
-            "input_container_style",
-            "input_placeholder",
-            "input_text_style",
-            "messages",
-            "new_message",
-            "persistence",
-            "persistence_type",
-            "supported_input_file_types",
-            "theme",
-            "typing_indicator",
-            "user_bubble_style",
-        ]
-        self.available_wildcard_properties = []
-        _explicit_args = kwargs.pop("_explicit_args")
+    def __init__(self, id=Component.UNDEFINED, messages=Component.UNDEFINED, theme=Component.UNDEFINED, container_style=Component.UNDEFINED, typing_indicator=Component.UNDEFINED, new_message=Component.UNDEFINED, input_container_style=Component.UNDEFINED, input_text_style=Component.UNDEFINED, fill_height=Component.UNDEFINED, fill_width=Component.UNDEFINED, user_bubble_style=Component.UNDEFINED, assistant_bubble_style=Component.UNDEFINED, input_placeholder=Component.UNDEFINED, class_name=Component.UNDEFINED, persistence=Component.UNDEFINED, persistence_type=Component.UNDEFINED, supported_input_file_types=Component.UNDEFINED, file_attachment_button_config=Component.UNDEFINED, send_button_config=Component.UNDEFINED, **kwargs):
+        self._prop_names = ['id', 'assistant_bubble_style', 'class_name', 'container_style', 'file_attachment_button_config', 'fill_height', 'fill_width', 'input_container_style', 'input_placeholder', 'input_text_style', 'messages', 'new_message', 'persistence', 'persistence_type', 'send_button_config', 'supported_input_file_types', 'theme', 'typing_indicator', 'user_bubble_style']
+        self._valid_wildcard_attributes =            []
+        self.available_properties = ['id', 'assistant_bubble_style', 'class_name', 'container_style', 'file_attachment_button_config', 'fill_height', 'fill_width', 'input_container_style', 'input_placeholder', 'input_text_style', 'messages', 'new_message', 'persistence', 'persistence_type', 'send_button_config', 'supported_input_file_types', 'theme', 'typing_indicator', 'user_bubble_style']
+        self.available_wildcard_properties =            []
+        _explicit_args = kwargs.pop('_explicit_args')
         _locals = locals()
         _locals.update(kwargs)  # For wildcard attrs and excess named props
         args = {k: _locals[k] for k in _explicit_args}

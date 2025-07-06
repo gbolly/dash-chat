@@ -1,3 +1,5 @@
 from .ChatComponent import ChatComponent
 
-__all__ = ["ChatComponent"]
+__all__ = [
+    "ChatComponent"
+]

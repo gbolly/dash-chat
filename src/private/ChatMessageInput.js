@@ -6,22 +6,52 @@
  *     handleInputChange={handleInput}
  *     value={messageValue}
  *     placeholder="Type your message here"
- *     buttonLabel="Send"
  *     customStyles={{ backgroundColor: "#f0f0f0" }}
  *     inputComponentStyles={{ padding: "10px" }}
  *     showTyping={showTyping}
- *     setAttachment={showTsetAttachmentyping}
+ *     setAttachment={setAttachment}
+ *     accept={["image/*", "application/pdf"]}
+ *     file_attachment_button_config={{
+ *         show: true,
+ *         label: "Attach File",
+ *         icon: "paperclip",
+ *         icon_position: "left",
+ *         style: { color: "#007bff" },
+ *         className: "custom-file-button"
+ *     }}
+ *     send_button_config={{
+ *         label: "Send",
+ *         icon: "paper-plane",
+ *         icon_position: "right",
+ *         style: { backgroundColor: "#28a745", color: "#fff" },
+ *         className: "custom-send-button"
+ *     }}
  * />
  * ```
 */
 
 import React, { useState, useRef } from "react";
 import PropTypes from "prop-types";
-import { Paperclip, Send, X, FileText } from "lucide-react";
+import {
+    Paperclip,
+    Send,
+    X,
+    FileText,
+    SendHorizontal,
+    Folder
+} from "lucide-react";
 
 /**
  * A reusable message input component for chat interfaces.
 */
+
+const IconMap = {
+    "paper-plane": <Send size={16} />,
+    "paper-plane-horizontal": <SendHorizontal size={16} />,
+    "paperclip": <Paperclip size={16} />,
+    "file": <FileText size={16} />,
+    "folder": <Folder size={16} />
+}
 
 const MessageInput = ({
     onSend,
@@ -29,11 +59,25 @@ const MessageInput = ({
     value,
     setAttachment,
     placeholder = "Start typing...",
-    buttonLabel,
     customStyles = null,
     inputComponentStyles = null,
     showTyping = false,
     accept,
+    file_attachment_button_config = {
+        show: true,
+        label: "Attach File",
+        icon: "paperclip",
+        icon_position: "only",
+        style: {},
+        className: "",
+    },
+    send_button_config = {
+        label: "Send",
+        icon: "paper-plane",
+        icon_position: "only",
+        style: {},
+        className: "",
+    },
 }) => {
     const fileInputRef = useRef(null);
     const [selectedFile, setSelectedFile] = useState(null);
@@ -66,6 +110,19 @@ const MessageInput = ({
             setSelectedFile(null);
             setFilePreview(null);
         }
+    };
+
+    const renderButtonContent = ({ icon, label, icon_position }) => {
+        const iconElement = IconMap[icon] || null;
+
+        return (
+            <>
+                {iconElement && icon_position === "left" && <span className="icon-left">{iconElement}</span>}
+                {icon_position !== "only" && <span className="button-label">{label}</span>}
+                {iconElement && icon_position === "right" && <span className="icon-right">{iconElement}</span>}
+                {iconElement && icon_position === "only" && <span className="icon-only">{iconElement}</span>}
+            </>
+        );
     };
 
     return (
@@ -109,28 +166,38 @@ const MessageInput = ({
                 className="message-input-field"
             />
             <div className="input-with-icons">
-                <button
-                    className="file-upload-button"
-                    onClick={() => fileInputRef.current.click()}
-                    data-testid="file-upload-button"
-                >
-                    <Paperclip size={20} />
-                </button>
-                <input
-                    type="file"
-                    ref={fileInputRef}
-                    style={{ display: "none" }}
-                    accept={Array.isArray(accept) ? accept.join(",") : accept}
-                    onChange={handleFileUpload}
-                    data-testid="file-input"
-                />
+                {file_attachment_button_config.show && (
+                    <>
+                        <button
+                            type="button"
+                            className={`file-upload-button ${file_attachment_button_config.className}`}
+                            onClick={() => fileInputRef.current.click()}
+                            style={file_attachment_button_config.style}
+                            disabled={showTyping}
+                            data-testid="file-upload-button"
+                        >
+                            {renderButtonContent(file_attachment_button_config)}
+                        </button>
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            style={{ display: "none" }}
+                            accept={Array.isArray(accept) ? accept.join(",") : accept}
+                            onChange={handleFileUpload}
+                            data-testid="file-input"
+                        />
+                    </>
+                )}
+
                 <button
                     onClick={handleSend}
-                    className={`message-input-button ${showTyping ? 'disabled' : ''}`}
-                    data-testid="send-button"
+                    type="button"
                     disabled={showTyping}
+                    className={`message-input-button btn ${send_button_config.className} ${showTyping ? "disabled" : ""}`}
+                    style={send_button_config.style}
+                    data-testid="send-button"
                 >
-                    {buttonLabel ? buttonLabel : <Send size={18} />}
+                    {renderButtonContent(send_button_config)}
                 </button>
             </div>
         </div>
@@ -181,6 +248,38 @@ MessageInput.propTypes = {
         PropTypes.string,
         PropTypes.arrayOf(PropTypes.string),
     ]),
+    /**
+     * Configuration for the file attachment button.
+     * - `show`: Whether to show the button.
+     * - `label`: Text label for the button.
+     * - `icon`: Icon name or URL for the button.
+     * - `icon_position`: Position of the icon relative to text ("left", "right", "only").
+     * - `style`: Custom styles for the button.
+     * - `className`: Additional class names for styling.
+    */
+    file_attachment_button_config: PropTypes.shape({
+        show: PropTypes.bool,
+        label: PropTypes.string,
+        icon: PropTypes.oneOf(["paper-plane-horizontal", "paper-plane", "folder", "file", "paperclip"]),
+        icon_position: PropTypes.oneOf(["left", "right", "only"]),
+        style: PropTypes.object,
+        className: PropTypes.string,
+    }),
+    /**
+     * Configuration for the send button.
+     * - `label`: Text label for the button.
+     * - `icon`: Icon name or URL for the button.
+     * - `icon_position`: Position of the icon relative to text ("left", "right", "only").
+     * - `style`: Custom styles for the button.
+     * - `className`: Additional class names for styling.
+    */
+    send_button_config: PropTypes.shape({
+        label: PropTypes.string,
+        icon: PropTypes.oneOf(["paper-plane-horizontal", "paper-plane", "folder", "file", "paperclip"]),
+        icon_position: PropTypes.oneOf(["left", "right", "only"]),
+        style: PropTypes.object,
+        className: PropTypes.string,
+    }),
 };
 
 export default MessageInput;
